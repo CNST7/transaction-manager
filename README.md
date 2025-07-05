@@ -6,6 +6,8 @@
 - django 5.2.3
 - djangorestframework 3.16.0
 - sqlite3
+- docker
+- pytest 8.4.1
 
 ## RUN
 
