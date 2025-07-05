@@ -1,0 +1,4 @@
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "transactionManager.settings_test"
+# solves problem with same file names in diff dirs
+addopts = "--import-mode=importlib"

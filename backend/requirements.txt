@@ -1,0 +1,14 @@
+# project dependencies
+Django==5.2.3
+djangorestframework==3.16.0
+django-filter==25.1
+django-naivedatetimefield==2.0.1
+pydantic==2.11.7
+
+# deploy
+gunicorn==23.0.0
+
+# testing
+pytest==8.4.1
+pytest-django==4.11.1
+pytest-xdist==3.6.1
