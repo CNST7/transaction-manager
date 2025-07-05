@@ -1,0 +1,11 @@
+{
+    "python.testing.pytestArgs": [
+        "backend",
+        // "-n 4",
+        "-p no:cacheprovider",
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true,
+    "python.defaultInterpreterPath": "${workspaceFolder}/backend/.venv/bin/python3",
+    "python.terminal.activateEnvironment": true
+}
