@@ -11,6 +11,8 @@
 
 Nie zdążyłem zrobić docker-compose, więc żeby uruchomić projekt należy utworzyć virtualne środowisko poprzez `venv` lub użyć `uv` czy `poetry`.
 
+> update - zdążyłem tutaj krótki opis: [docker compose](##docker-compose)
+
 ```shell
 cd backend
 python -m venv venv
