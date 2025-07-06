@@ -1,101 +1,121 @@
 # Transaction Manager
 
-# Stack
+A modular Django-based backend for managing and reporting product transactions, with CSV upload, REST API, and Dockerized deployment.
 
-- python 3.12
-- django 5.2.3
-- djangorestframework 3.16.0
-- sqlite3
-- docker
-- pytest 8.4.1
+## Features
 
-## RUN
+- Upload transactions via CSV file
+- REST API for listing, retrieving, and filtering transactions
+- Summary reports for customers and products
+- Modular monolith architecture, ready for future microservices split
+- Docker Compose setup with Nginx gateway
+- SQLite (default) database, ready for PostgreSQL migration
+- Logging, pagination, and filtering
+- Pytest-based test suite
 
-Nie zdążyłem zrobić docker-compose, więc żeby uruchomić projekt należy utworzyć virtualne środowisko poprzez `venv` lub użyć `uv` czy `poetry`.
+## Stack
 
-> update - zdążyłem tutaj krótki opis: [docker compose](##docker-compose)
+- Python 3.12
+- Django 5.2.3
+- Django REST Framework 3.16.0
+- django-filter
+- django-naivedatetimefield
+- Pydantic 2.11.7
+- SQLite3 (default)
+- Docker, Docker Compose
+- Nginx (gateway)
+- Pytest
 
-```shell
-cd backend
-python -m venv venv
+## Project Structure
 
-pip install -r requirements.txt
+```
+.
+├── backend/
+│   ├── transactionManager/
+│   │   ├── transactionManager/
+│   │   ├── transactionManagerCore/
+│   │   └── transactionManagerProcessor/
+│   ├── requirements.txt
+│   ├── pyproject.toml
+│   └── ...
+├── gateway/
+│   └── nginx.conf
+├── docker-compose.yml
+└── ...
 ```
 
-Ustaw pythonpath, podmień `SCIEŻKA-DO-PROJEKTU` na ścieżkę w której znajduje się projekt
+## Getting Started
 
-```
-export PYTHONPATH=$PYTHONPATH:SCIEŻKA-DO-PROJEKTU/transaction-manager/backend/transactionManager
-```
+### Local Development
 
-Uruchomienie testów:
+1. **Clone the repository**
+2. **Create and activate a virtual environment**
+   ```sh
+   cd backend
+   python -m venv venv
+   source venv/bin/activate
+   ```
+3. **Install dependencies**
+   ```sh
+   pip install -r requirements.txt
+   ```
+4. **Set PYTHONPATH**
+   ```sh
+   export PYTHONPATH=$PYTHONPATH:$(pwd)/transactionManager
+   ```
+5. **Apply migrations**
+   ```sh
+   cd transactionManager
+   python manage.py migrate
+   ```
+6. **Run the development server**
+   ```sh
+   python manage.py runserver
+   ```
+   The API will be available at [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
 
-```shell
+### Running Tests
+
+```sh
 cd backend
 pytest
 ```
 
-Uruchomienie projektu:
-przejdź do folderu w którym znaduje się plik `manage.py`
+### Docker Compose
 
-> SCIEŻKA-DO-PROJEKTU/transaction-manager/backend/transactionManager
+1. **Build and start services**
+   ```sh
+   docker-compose up --build
+   ```
+2. **Access the API**
+   - [http://127.0.0.1/](http://127.0.0.1/) (proxied via Nginx)
 
-a następnie uruchom komendy:
+## API Endpoints
 
-```
-python manage.py migrate
-python manage.py runserver
-```
+- `POST /transactions/upload` — Upload CSV file with transactions
+- `GET /transactions` — List transactions (with filtering)
+- `GET /transactions/{id}` — Retrieve transaction details
+- `GET /reports/customer-summary/{customer_id}` — Customer summary report
+- `GET /reports/product-summary/{product_id}` — Product summary report
 
-projekt będzie dostępny lokalnie pod adresem: http://127.0.0.1:8000/
+## Development Notes
 
-## ADR
-
-- Architektura - modularny monolit. Dobre rozwiązanie na start, możliwość rozbicia na mikroserwisy gdy projekt zacznie się bardziej rozbudowywać.
-
-- Użyłem `transaction_id` jako PrimaryKey w modelu `Transactions` w celu uproszczenia problemu. Innym rozwiązaniem byłoby tworzenie samemu id transakcji zamiast korzystać z dostarczonego id.
-  Minusem takiego rozwiązania jest to, że przy wgraniu kolejnego pliku csv dane mogą zostać nadpisane jeśli `transaction_id` powtórzy się w drugim pliku.
-
-- Zahardkodowałem `currency_exchange` w celu uproszczenia. Dane te można by pobierać ze zmiennych środowiskowych lub api banku. Wydaje mi sie, że dobrym pomysłem byłoby przechowywanie ich w systemie, żeby wiedzieć jakim kursem zostały przeliczone dane podczas tworzenia raportów.
-
-- Użyłem typu `Decimal` do obliczania oraz przechowywania danych o kwotach
+- Modular monolith architecture for easy future refactoring
+- Currency exchange rates are hardcoded for simplicity
+- Transaction IDs are primary keys; uploading duplicate IDs will overwrite data
+- Logging is configured to file and console
+- See [backend/README.md](backend/README.md) for more details and TODOs
 
 ## TODO
 
-- lepsza konteneryzacja
-- postresql jako baza danych
-- uporządkowanie testów
-- validacja csv - użycie `ModelSerializer'a` aby constrainy pochodziły z jednego źródła
-- `product_id` i `customer_id` jako klucze obce
-- pola lub model na metadane tranzakcji:
-  - kto wgrywał plik
-  - kiedy
-  - powiązane dane tranzacykcyjne
-- logowanie
-- handlowanie wyjątków
-- zadania dodatkowe
-- równoległe odpalanie testów
-  - pytest-xdist
-    > narazie bez, bo dłużej trwa utworzenie procesów niż odpalanie ich szeregowo.
-    > Może to być przydatne przy większej ich ilości
-- pre-commit
-  - narzędzia do statycznej analizy
-  - uruchamianie testów
-  - lintowanie (black)
-- ustawienia produkcyjne
-- ci/cd
-- rozbicie `requirements.txt` (nie potrzebujemy narzędzi developerskich na produkcji)
-- celery, redis (np. do cache'owania raportów)
-- `uv` zamiast `venv`'a
-- `SECRET_KEY` nie powinien być na gicie!
-- zmienne w `settings.py` ze zmiennych środowiskowych (plik `.env`)
-- brakuje volumenu dla bazy danych
+- PostgreSQL support
+- Improved Docker volumes and permissions
+- Swagger/OpenAPI documentation
+- Production settings and CI/CD
+- Pre-commit hooks and code linting
 
-## docker compose
+More [backend todos](backend/README.md#todo)
 
-Zrobiłem na szybko, ale bez postgres'a. :\
-Nie wiem czy utworzą się logi w `logs/` w kontenerze. (Możliwe że brakuje `chmod`'a w Dockerfile)
-Nie zdążyłem przetesować czy wszystko jest poprawnie skonteneryzowane.
+**Author:** Michał Jarek
 
-Po uruchomieniu całość powinna działać na http://127.0.0.1/
-Bez dockera http://127.0.0.1:8000/
+**License:** MIT
