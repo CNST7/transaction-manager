@@ -18,8 +18,8 @@ RUN pip install -r /backend/requirements.txt --no-cache-dir
 # TODO remove when volume will be created
 COPY ./transactionManager /backend/transactionManager/
 
-RUN useradd -u 1000 my-user
-ADD --chown=1000:1000 ./transactionManager /backend/transactionManager
-USER my-user
+# RUN useradd -u 1000 my-user
+# ADD --chown=1000:1000 ./transactionManager /backend/transactionManager
+# USER my-user
 
 CMD ["./entrypoint.sh"]

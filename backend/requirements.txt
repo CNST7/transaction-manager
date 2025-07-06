@@ -5,6 +5,9 @@ django-filter==25.1
 django-naivedatetimefield==2.0.1
 pydantic==2.11.7
 
+# PostgreSQL database adapter
+psycopg2-binary==2.9.10
+
 # deploy
 gunicorn==23.0.0
 uvicorn==0.35.0
