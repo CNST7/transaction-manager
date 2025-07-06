@@ -61,11 +61,11 @@ A modular Django-based backend for managing and reporting product transactions, 
    ```
 4. **Set PYTHONPATH**
    ```sh
-   export PYTHONPATH=$PYTHONPATH:$(pwd)/transactionManager
+   export PYTHONPATH=$PYTHONPATH:$(pwd)/backend/transactionManager
    ```
 5. **Apply migrations**
    ```sh
-   cd transactionManager
+   cd backend/transactionManager
    python manage.py migrate
    ```
 6. **Run the development server**
