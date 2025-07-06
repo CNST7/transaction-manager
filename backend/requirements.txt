@@ -7,6 +7,7 @@ pydantic==2.11.7
 
 # deploy
 gunicorn==23.0.0
+uvicorn==0.35.0
 
 # testing
 pytest==8.4.1

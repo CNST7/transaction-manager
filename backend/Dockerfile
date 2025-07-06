@@ -8,6 +8,8 @@ EXPOSE 8000
 WORKDIR /backend/transactionManager
 RUN apt-get update && apt-get upgrade -y && apt-get clean
 
+COPY ./entrypoint.sh /backend/transactionManager/entrypoint.sh
+
 # RUN mkdir -p /backend/transactionManager/staticfiles
 COPY ./requirements.txt /backend/requirements.txt
 RUN pip install --upgrade pip
@@ -20,7 +22,4 @@ RUN useradd -u 1000 my-user
 ADD --chown=1000:1000 ./transactionManager /backend/transactionManager
 USER my-user
 
-RUN python manage.py migrate
-
-# CMD ["python", "manage.py", "runserver"]
-CMD ["gunicorn", "transactionManager.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "4", "--threads", "4", "--timeout", "120"]
+CMD ["./entrypoint.sh"]
