@@ -17,6 +17,7 @@ RUN pip install -r /backend/requirements.txt --no-cache-dir
 
 # TODO remove when volume will be created
 COPY ./transactionManager /backend/transactionManager/
+RUN chmod -R 766 logs
 
 RUN useradd -u 1000 my-user
 ADD --chown=1000:1000 ./transactionManager /backend/transactionManager
