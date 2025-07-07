@@ -70,7 +70,7 @@ A modular Django-based backend for managing and reporting product transactions, 
    ```
 6. **Run the development server**
    ```sh
-   python manage.py runserver
+   python manage.py runserver --settings=transactionManager.settings_local
    ```
    The API will be available at [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
 
