@@ -8,11 +8,11 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from rest_framework.request import Request
 from django_filters.rest_framework import DjangoFilterBackend
-
 from transactionManagerProcessor.serializers import TransactionSerializer
 from transactionManagerProcessor.models import Transaction
 from transactionManagerProcessor.dto import TransactionDTO
 from rest_framework import viewsets, mixins
+from django.db.utils import IntegrityError
 
 
 logger = logging.getLogger("transactionManagerProcessor")
@@ -54,6 +54,8 @@ class TransactionUploadEndpoint(APIView):
                 logger.info(f"PROCESSED DATA: {transaction_data}")
             except ValidationError as e:
                 logger.error(f"FAILED DATA: {transaction_data}")
+            except IntegrityError as e:
+                logger.error(f"TRANSACTION ALREADY EXIST {db_transaction.id=} ")
 
         # TODO return ID and use that ID later to check csv processing status.
         # return Response(
