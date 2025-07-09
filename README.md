@@ -102,14 +102,14 @@ pytest
 
 - Modular monolith architecture for easy future refactoring
 - Currency exchange rates are hardcoded for simplicity
-- Transaction IDs are primary keys; uploading duplicate IDs will overwrite data
+- Transaction IDs are primary keys; uploading duplicate IDs will ~~overwrite data~~ create log
 - Logging is configured to file and console
 - See [backend/README.md](backend/README.md) for more details and TODOs
 
 ## TODO
 
-- PostgreSQL support
-- Improved Docker volumes and permissions
+- [x] PostgreSQL support
+- [x] Improve Docker volumes and permissions
 - Swagger/OpenAPI documentation
 - Production settings and CI/CD
 - Pre-commit hooks and code linting
