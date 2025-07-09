@@ -2,8 +2,6 @@
 
 ## TODO
 
-- lepsza konteneryzacja
-- postresql jako baza danych
 - uporządkowanie testów
 - validacja csv - użycie `ModelSerializer'a` aby constrainy pochodziły z jednego źródła
 - `product_id` i `customer_id` jako klucze obce
@@ -29,9 +27,14 @@
 - `uv` zamiast `venv`
 - `SECRET_KEY` nie powinien być na gicie!
 - zmienne w `settings.py` ze zmiennych środowiskowych (plik `.env`)
-- brakuje volumenu dla bazy danych
 - dokumentacja (swagger)
 - serwowanie plików statycznych
+
+### DONE
+
+- [x] postresql jako baza danych
+- [x] brakuje volumenu dla bazy danych
+- [x] volumen dla logów
 
 ## docker compose
 
