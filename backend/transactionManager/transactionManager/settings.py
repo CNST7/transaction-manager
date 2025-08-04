@@ -15,18 +15,19 @@ import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_TEST_DIR = Path(__file__).resolve().parent.parent.parent / "tests"
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-32402#aa#1!du%x62-gs%0s5-$p+6jxl^5-2)_#u-!_p6=a_56"
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = bool(os.environ.get("DEBUG"))
 
-ALLOWED_HOSTS = ["backend", "127.0.0.1", "0.0.0.0", "localhost"]
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(",")
 
 
 # Application definition
@@ -86,10 +87,6 @@ WSGI_APPLICATION = "transactionManager.wsgi.application"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    # "default": {
-    #     "ENGINE": "django.db.backends.sqlite3",
-    #     "NAME": BASE_DIR / "db.sqlite3",
-    # }
     "default": {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": os.environ.get("POSTGRES_DB"),
@@ -152,6 +149,25 @@ REST_FRAMEWORK = {
 
 APPEND_SLASH = False
 
+# Media settings
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
+
+# Celery settings
+CELERY_TIMEZONE = TIME_ZONE
+CELERY_TASK_TRACK_STARTED = True  # https://docs.celeryq.dev/en/stable/userguide/configuration.html#task-track-started
+CELERY_TASK_TIME_LIMIT = 30 * 6
+CELERY_RESULT_EXPIRES = 10 * 60
+
+RABBITMQ_USER = os.environ.get("RABBITMQ_USER")
+RABBITMQ_PASSWORD = os.environ.get("RABBITMQ_PASSWORD")
+RABBITMQ_VHOST = os.environ.get("RABBITMQ_VHOST")
+CELERY_BROKER_URL = (
+    "amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:5672/${RABBITMQ_VHOST}",
+)
+CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND")
+
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -173,7 +189,7 @@ LOGGING = {
                 BASE_DIR, "logs", "transactionManagerProcessor.log"
             ),
             "maxBytes": 1024 * 1024 * 5,  # 5 MB
-            "backupCount": 5,  # Keep last 5 log files
+            "backupCount": 5,
             "formatter": "verbose",
         },
         "console": {

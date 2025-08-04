@@ -1,6 +1,12 @@
+venv
 .*
 !.gitignore
 !.dockerignore
+
 db.sqlite3
 *.log
-venv
+**/csv_transactions_files/**
+**/logs/**
+
+!.gitkeep
+!.env

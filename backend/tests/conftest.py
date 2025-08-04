@@ -3,9 +3,38 @@ from transactionManagerProcessor.models import Transaction
 from transactionManagerProcessor.enums import Currency
 from datetime import datetime, timedelta
 from uuid import UUID, uuid4
-from typing import Generator
+from collections.abc import Generator
+from django.conf import settings
+from pathlib import PosixPath
+from testcontainers.redis import RedisContainer
+from testcontainers.rabbitmq import RabbitMqContainer
+from transactionManager.utils import BACKEND_PORT_LOCK, BROKER_PORT_LOCK
 
 pytestmark = pytest.mark.django_db()
+
+
+@pytest.fixture
+def celery_deps(scope="session"):
+    BACKEND_PORT_LOCK.unlock_port()
+    BROKER_PORT_LOCK.unlock_port()
+    # TODO WARNING This is unsafe because ports can be locked by different processes at this point.
+    with (
+        RabbitMqContainer("rabbitmq:4.1.2-alpine").with_bind_ports(
+            5672, settings.PORT_BROKER
+        ),
+        RedisContainer("redis:8.0.3-bookworm").with_bind_ports(
+            6379, settings.PORT_RESULT_BACKEND
+        ),
+    ):
+        yield
+
+
+@pytest.fixture(autouse=True)
+def temp_media_root(tmp_path: PosixPath, settings):
+    temp_dir = tmp_path / "media"
+    temp_dir.mkdir()
+    settings.MEDIA_ROOT = str(temp_dir)
+    yield
 
 
 @pytest.fixture

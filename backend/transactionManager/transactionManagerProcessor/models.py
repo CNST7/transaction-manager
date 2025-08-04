@@ -30,3 +30,15 @@ class Transaction(models.Model):
     @staticmethod
     def from_dto(transaction_dto: TransactionDTO) -> Transaction:
         return Transaction(**transaction_dto.model_dump())
+
+
+class TransactionCSV(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    file = models.FileField(upload_to="csv_transactions_files/")
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+
+class CSVProcessingResult(models.Model):
+    csv_file = models.ForeignKey(TransactionCSV, on_delete=models.CASCADE)
+    no_fails = models.IntegerField(default=0)
+    no_sucesses = models.IntegerField(default=0)

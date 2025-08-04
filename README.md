@@ -66,9 +66,34 @@ A modular Django-based backend for managing and reporting product transactions, 
 5. **Apply migrations**
    ```sh
    cd backend/transactionManager
-   python manage.py migrate
+   python manage.py migrate --settings=transactionManager.settings_local
    ```
-6. **Run the development server**
+6. **Run local rabbitmq instance**
+
+   ```sh
+   docker run -d -p 5672:5672 rabbitmq
+   ```
+
+   Port already in use?
+
+   > docker: Error response from daemon: driver failed programming external connectivity on endpoint condescending_shtern (7e749d3eedcd383bdb91d4161ee263d1cd8051817a267bc3df998fbc555037ea): failed to bind port 0.0.0.0:5672/tcp: Error starting userland proxy: listen tcp4 0.0.0.0:5672: bind: address already in use.
+
+   fix with:
+
+   ```sh
+   sudo lsof -i :5672
+   sudo kill -9 PID
+   ```
+
+   or use another port (requires reconfiguration)
+
+7. **Create celery worker**
+
+   ```sh
+   celery -A transactionManager worker --loglevel=INFO
+   ```
+
+8. **Run the development server**
    ```sh
    python manage.py runserver --settings=transactionManager.settings_local
    ```

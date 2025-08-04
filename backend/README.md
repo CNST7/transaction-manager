@@ -23,10 +23,10 @@
 - ustawienia produkcyjne
 - ci/cd
 - rozbicie `requirements.txt` (nie potrzebujemy narzędzi developerskich na produkcji)
-- celery, redis (np. do cache'owania raportów)
+- [x] celery, redis (np. do cache'owania raportów)
 - `uv` zamiast `venv`
 - `SECRET_KEY` nie powinien być na gicie!
-- zmienne w `settings.py` ze zmiennych środowiskowych (plik `.env`)
+- [x] zmienne w `settings.py` ze zmiennych środowiskowych (plik `.env`)
 - dokumentacja (swagger)
 - serwowanie plików statycznych
 

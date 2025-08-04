@@ -17,6 +17,11 @@ urlpatterns = [
         endpoints.TransactionUploadEndpoint.as_view(),
         name="transactionUpload",
     ),
+    path(
+        f"{transactions_resource_name}/processing-status/<str:task_id>",
+        endpoints.ProcessingStatusEndpoint.as_view(),
+        name="processingStatus",
+    ),
     path("", include(transactions_router.urls)),
     path(
         f"{reports_resource_name}/customer-summary/<str:customer_id>",

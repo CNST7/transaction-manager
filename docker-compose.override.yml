@@ -1,0 +1,26 @@
+services:
+  backend:
+    restart: no
+    environment:
+      - DEBUG=1
+
+
+  celery:
+    restart: no
+    environment:
+      - DEBUG=1
+
+  backend_db:
+    restart: "no"
+    ports:
+      - 5432:5432
+
+  rabbitmq:
+    restart: "no"
+    ports:
+      - 5672:5672
+
+  redis:
+    restart: "no"
+    ports:
+      - 6379:6379

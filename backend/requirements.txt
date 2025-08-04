@@ -4,15 +4,26 @@ djangorestframework==3.16.0
 django-filter==25.1
 django-naivedatetimefield==2.0.1
 pydantic==2.11.7
+python-dotenv==1.1.1
+
+# celery
+celery==5.5.3
+redis==6.2.0 # local
 
 # PostgreSQL database adapter
 psycopg2-binary==2.9.10
 
-# deploy
+# web server
 gunicorn==23.0.0
 uvicorn==0.35.0
 
 # testing
 pytest==8.4.1
 pytest-django==4.11.1
-pytest-xdist==3.6.1
+pytest-xdist[psutil]==3.8.0
+testcontainers[redis]==4.10.0
+testcontainers[rabbitmq]==4.10.0
+
+# testing infrastructure
+testcontainers==4.10.0
+requests==2.32.4
