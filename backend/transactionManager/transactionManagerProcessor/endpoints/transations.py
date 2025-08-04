@@ -36,39 +36,7 @@ class TransactionUploadEndpoint(APIView):
             )
 
         saved_csv = TransactionCSV.objects.create(file=csv_file)
-
-        # TODO
-        # save file
-        # pass id to `process_transactions_csv`
-        # return ID
-
-        # process csv in celery
-
-        # create view \transactions\file-processing\{file_id} that will return result of file processing
-
         result: AsyncResult = process_transactions_csv.delay(saved_csv.id)
-        # process_transactions_csv.delay(saved_csv.id)
-        # process_transactions_csv(saved_csv.id)
-
-        # if csv_file.multiple_chunks():
-        #     decoded_file = b"".join(chunk for chunk in csv_file.chunks()).decode(
-        #         "utf-8"
-        #     )
-        # else:
-        #     decoded_file = csv_file.read().decode("utf-8")
-        # io_string = io.StringIO(decoded_file)
-        # reader = csv.DictReader(io_string)
-
-        # for transaction_data in reader:
-        #     try:
-        #         dto_transaction = TransactionDTO(**transaction_data)
-        #         db_transaction = Transaction.from_dto(dto_transaction)
-        #         db_transaction.save()
-        #         logger.info(f"PROCESSED DATA: {transaction_data}")
-        #     except ValidationError as e:
-        #         logger.error(f"FAILED DATA: {transaction_data}")
-        #     except IntegrityError as e:
-        #         logger.error(f"TRANSACTION ALREADY EXIST {db_transaction.id=} ")
 
         return Response(
             {
