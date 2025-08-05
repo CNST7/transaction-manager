@@ -81,8 +81,8 @@ services:
     volumes:
       - rabbitmq_volume:/var/lib/rabbitmq
     environment:
-      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER?Variable not set}
-      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD?Variable not set}
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER?Variable not set}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD?Variable not set}
     healthcheck:
       test: ["CMD", "rabbitmqctl", "status"]
       interval: 10s

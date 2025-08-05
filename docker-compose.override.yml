@@ -2,8 +2,7 @@ services:
   backend:
     restart: no
     environment:
-      - DEBUG=1
-
+      DEBUG=1
 
   celery:
     restart: no
@@ -11,16 +10,16 @@ services:
       - DEBUG=1
 
   backend_db:
-    restart: "no"
+    restart: no
     ports:
       - 5432:5432
 
   rabbitmq:
-    restart: "no"
+    restart: no
     ports:
       - 5672:5672
 
   redis:
-    restart: "no"
+    restart: no
     ports:
       - 6379:6379
