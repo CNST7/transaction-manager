@@ -18,7 +18,7 @@ urlpatterns = [
         name="transactionUpload",
     ),
     path(
-        f"{transactions_resource_name}/processing-status/<str:task_id>",
+        f"{transactions_resource_name}/processing-status/<str:transaction_csv_id>",
         endpoints.ProcessingStatusEndpoint.as_view(),
         name="processingStatus",
     ),

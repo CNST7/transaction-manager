@@ -1,64 +1,85 @@
 import csv
-import io
 import logging
+from abc import ABC, abstractmethod
 from pydantic import ValidationError
 from django.db.utils import IntegrityError
 from celery import shared_task
 from transactionManagerProcessor.models import (
+    ProcessingTracker,
     Transaction,
     TransactionCSV,
-    CSVProcessingResult,
+    CSVProcessingStatus,
 )
 from transactionManagerProcessor.dto import TransactionDTO
 
-logger = logging.getLogger("transactionManagerProcessor")
+logger = logging.getLogger(__name__)
 
 
 @shared_task()
-def process_transactions_csv(csv_file_id: str):
-    logger.info(f"Starts processing csv {csv_file_id=}.")
+def process_transaction_csv(transaction_csv_id: str):
     try:
-        transction_csv = TransactionCSV.objects.get(id=csv_file_id)
+        transaction_csv = TransactionCSV.objects.get(id=transaction_csv_id)
     except TransactionCSV.DoesNotExist():
         logger.error(
-            f"Failed to process {csv_file_id}, file does not exist in database."
+            f"Failed to process {transaction_csv_id}, file does not exist in database."
         )
         return
-    csv_file = transction_csv.file
-    if csv_file.multiple_chunks():
-        decoded_file = b"".join(chunk for chunk in csv_file.chunks()).decode("utf-8")
-    else:
-        decoded_file = csv_file.read().decode("utf-8")
-    io_string = io.StringIO(decoded_file)
-    reader = csv.DictReader(io_string)
 
-    fail_counter = 0
-    success_counter = 0
-    for transaction_data in reader:
+    with (
+        CSVProcessingStatusManager(transaction_csv) as status_tracker,
+        open(transaction_csv.file.path, encoding="utf-8") as csvfile,
+    ):
+        dict_reader = csv.DictReader(csvfile)
+        for transaction_data in dict_reader:
+            _process_transaction(transaction_data, status_tracker)
+
+
+def _process_transaction(
+    transaction_data: dict[str, any],
+    status_tracker: ProcessingTracker,
+):
+    try:
         try:
-            try:
-                dto_transaction = TransactionDTO(**transaction_data)
-                db_transaction = Transaction.from_dto(dto_transaction)
-                db_transaction.save()
-                logger.info(f"PROCESSED DATA: {transaction_data}")
-            except Exception as e:
-                fail_counter += 1
-                raise
-        except ValidationError as e:
-            logger.error(f"FAILED DATA: {transaction_data}")
-        except IntegrityError as e:
-            logger.error(f"TRANSACTION ALREADY EXIST {transaction_data}")
-        except Exception:
-            logger.error(
-                f"FAILED TO CREATE TRANSACTION, UNHANDLED ERROR {transaction_data}"
-            )
-        else:
-            success_counter += 1
+            dto_transaction = TransactionDTO(**transaction_data)
+            db_transaction = Transaction.from_dto(dto_transaction)
+            db_transaction.save()
+            logger.debug(f"PROCESSED DATA: {transaction_data}")
+        except Exception as e:
+            status_tracker.register_fail()
+            raise
+    except ValidationError as e:
+        logger.error(f"FAILED DATA: {transaction_data}")
+    except IntegrityError as e:
+        logger.error(f"TRANSACTION ALREADY EXIST {transaction_data}")
+    except Exception as e:
+        logger.error(
+            f"FAILED TO CREATE TRANSACTION, UNHANDLED ERROR {transaction_data}"
+        )
+    else:
+        status_tracker.register_success()
 
-    res = CSVProcessingResult.objects.create(
-        csv_file=transction_csv,
-        no_fails=fail_counter,
-        no_sucesses=success_counter,
-    )
-    # res.save()
-    logger.info(f"CREATED RESULT ENTITY {res.csv_file.id=}")
+
+class ProcessingStatusManager(ABC):
+    @abstractmethod
+    def __enter__(self) -> ProcessingTracker: ...
+
+    @abstractmethod
+    def __exit__(self, type, value, traceback) -> bool: ...
+
+
+class CSVProcessingStatusManager(ProcessingStatusManager):
+    def __init__(self, transaction_csv: TransactionCSV):
+        self._csv_processing_status = CSVProcessingStatus.objects.get(
+            transaction_csv=transaction_csv
+        )
+
+    def __enter__(self) -> ProcessingTracker:
+        return self._csv_processing_status
+
+    def __exit__(self, type, value, traceback) -> bool:
+        if value:
+            self._csv_processing_status.set_failed()
+        else:
+            self._csv_processing_status.set_finished()
+        self._csv_processing_status.save()
+        return True

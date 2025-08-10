@@ -153,6 +153,8 @@ APPEND_SLASH = False
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
+LOG_DIR = BASE_DIR / "logs"
+
 # Celery settings
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_TASK_TRACK_STARTED = True  # https://docs.celeryq.dev/en/stable/userguide/configuration.html#task-track-started
@@ -162,9 +164,7 @@ CELERY_RESULT_EXPIRES = 10 * 60
 RABBITMQ_USER = os.environ.get("RABBITMQ_USER")
 RABBITMQ_PASSWORD = os.environ.get("RABBITMQ_PASSWORD")
 RABBITMQ_VHOST = os.environ.get("RABBITMQ_VHOST")
-CELERY_BROKER_URL = (
-    "amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:5672/${RABBITMQ_VHOST}",
-)
+CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL")
 CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND")
 
 
@@ -173,7 +173,7 @@ LOGGING = {
     "disable_existing_loggers": False,
     "formatters": {
         "verbose": {
-            "format": "{levelname} {asctime} {module} {message}",
+            "format": "{levelname} {asctime} {name} {module} {message}",
             "style": "{",
         },
         "simple": {
@@ -185,17 +185,20 @@ LOGGING = {
         "file": {
             "level": "INFO",
             "class": "logging.handlers.RotatingFileHandler",
-            "filename": os.path.join(
-                BASE_DIR, "logs", "transactionManagerProcessor.log"
-            ),
+            "filename": LOG_DIR / "transactionManagerProcessor.log",
             "maxBytes": 1024 * 1024 * 5,  # 5 MB
             "backupCount": 5,
             "formatter": "verbose",
         },
         "console": {
+            "level": "DEBUG",
             "class": "logging.StreamHandler",
             "formatter": "simple",
         },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "INFO",
     },
     "loggers": {
         "django": {

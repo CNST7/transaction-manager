@@ -1,15 +1,6 @@
 {
     "python.testing.pytestArgs": [
-        ".",
-
-        "-n 2",
-        // "-n auto", // this is bugged on vscode, 
-        // breaks at collecting tests with: `-m pytest -p vscode_pytest --collect-only`
-        // but it can be run manually from workspaceFolder: `pytest . -n auto -p no:cacheprovider -vv`
-
-        "-p no:cacheprovider",
-        "-vv",
-        // "-m", "not slow",
+        "backend",
     ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,

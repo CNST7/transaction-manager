@@ -1,0 +1,8 @@
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "transactionManager.settings_test"
+
+# "--import-mode=importlib" solves problem with same file names in diff dirs
+# "-n auto" causes errors in vscode (requires psutil: pytest-xdist[psutil])
+addopts = ["--import-mode=importlib", "-n 2", "-p no:cacheprovider"]
+
+markers = ["slow: marks slow tests"]

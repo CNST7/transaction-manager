@@ -1,10 +1,11 @@
-from uuid import UUID
 import pytest
+from typing import Any
+from uuid import UUID
 from django.test.client import Client
 from django.urls import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
 from urllib.parse import urlencode
-from celery import states
+from transactionManagerProcessor.enums import ProcessingStatus
 from transactionManagerProcessor.models import Transaction, TransactionCSV
 
 pytestmark = pytest.mark.django_db(transaction=True)
@@ -14,18 +15,9 @@ class TestTransations_Upload:
     def test_transations_upload(
         self,
         client: Client,
-        celery_deps,
+        csv_file: SimpleUploadedFile,
     ):
         url = reverse("transactionUpload")
-        csv_content = b"id,timestamp,amount,currency,customer_id,product_id,quantity\nd0466264-1384-4dc0-82d0-39e541b5c121,2025-07-02 20:48:45.336874,25.30,PLN,14245004-9354-4b77-8744-19e36372f4cd,0e64a915-9711-47f3-a640-be6f517546b1,5\nd1466264-1384-4dc0-82d0-39e541b5c121,2025-07-02 20:48:45.336874,25.30,CAD,14245004-9354-4b77-8744-19e36372f4cd,0e64a915-9711-47f3-a640-be6f517546b1,5"
-        filename = "test.csv"
-
-        csv_file = SimpleUploadedFile(
-            filename,
-            csv_content,
-            content_type="multipart/form-data",
-        )
-
         response = client.post(
             url,
             {"file": csv_file},
@@ -34,13 +26,12 @@ class TestTransations_Upload:
                 f"content_disposition": "attachment; filename={filename}",
             },
         )
+        content: dict[str, Any] = response.json()
+        csv_file_upload_id = content.get("transaction_csv_id")
         assert response.status_code == 200
-        csv_file_upload_id = response.data.get("transaction_csv_id")
-        assert csv_file_upload_id
         csv_file_saved = TransactionCSV.objects.get(id=csv_file_upload_id)
+        assert csv_file_upload_id
         assert csv_file_saved
-        celery_task_id = response.data.get("celery_task_id")
-        assert celery_task_id
 
     def test_transations_upload_corrupted_file(self): ...
     def test_transations_upload_missing_file(self): ...
@@ -72,14 +63,14 @@ class TestTransations_List:
             "quantity",
         )
         assert all(
-            (field in response.data.get("results")[0] for field in transaction_fields)
+            (field in response.json().get("results")[0] for field in transaction_fields)
         )
 
         pagination_fields = "next", "previous", "results", "count"
-        assert all((field in response.data for field in pagination_fields))
+        assert all((field in response.json() for field in pagination_fields))
 
-        assert response.data.get("count") == 1000
-        assert len(response.data.get("results")) == 100
+        assert response.json().get("count") == 1000
+        assert len(response.json().get("results")) == 100
 
     def test_transactions_list_filters_product_id(
         self,
@@ -99,9 +90,10 @@ class TestTransations_List:
 
         assert response.status_code == 200
 
+        content: dict[str, Any] = response.json()
+        transactions: list[dict[str, Any]] = content.get("results")
         unique_products = {
-            transaction.get("product_id")
-            for transaction in response.data.get("results")
+            transaction.get("product_id") for transaction in transactions
         }
         assert unique_products == {str(product_id_a)}
 
@@ -144,7 +136,7 @@ class TestTransations_Retrieve:
         )
 
         assert response.status_code == 200
-        assert response.data == {
+        assert response.json() == {
             "id": "d0466264-1384-4dc0-82d0-39e541b5c121",
             "timestamp": "2025-07-02T20:48:45.336874Z",
             "amount": "25.30",
@@ -159,18 +151,9 @@ class TestTransations_ProcessingStatus:
     def test_transations_processing_status(
         self,
         client: Client,
-        celery_deps,
+        csv_file: SimpleUploadedFile,
     ):
         url = reverse("transactionUpload")
-        csv_content = b"id,timestamp,amount,currency,customer_id,product_id,quantity\nd0466264-1384-4dc0-82d0-39e541b5c121,2025-07-02 20:48:45.336874,25.30,PLN,14245004-9354-4b77-8744-19e36372f4cd,0e64a915-9711-47f3-a640-be6f517546b1,5"
-        filename = "test.csv"
-
-        csv_file = SimpleUploadedFile(
-            filename,
-            csv_content,
-            content_type="multipart/form-data",
-        )
-
         response = client.post(
             url,
             {"file": csv_file},
@@ -180,11 +163,18 @@ class TestTransations_ProcessingStatus:
             },
         )
 
-        celery_task_id = response.data.get("celery_task_id")
-        assert celery_task_id
-
-        url = reverse("processingStatus", kwargs={"task_id": str(celery_task_id)})
+        content: dict[str, Any] = response.json()
+        transaction_csv_id = content.get("transaction_csv_id")
+        assert transaction_csv_id
+        url = reverse(
+            "processingStatus",
+            kwargs={"transaction_csv_id": str(transaction_csv_id)},
+        )
         response = client.get(url)
         assert response.status_code == 200
-        task_status = response.data.get("task_status")
-        assert task_status == states.PENDING
+        content = response.json()
+        assert content == {
+            "status": ProcessingStatus.PROCESSING,
+            "no_fails": 0,
+            "no_successes": 0,
+        }

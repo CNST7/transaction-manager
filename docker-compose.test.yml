@@ -1,0 +1,15 @@
+services:
+  backend:
+    volumes: []
+
+  celery:
+    volumes: []
+
+  db:
+    volumes: []
+
+  rabbitmq:
+    volumes: []
+
+  redis:
+    volumes: []

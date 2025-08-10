@@ -1,32 +1,24 @@
 import pytest
-from transactionManagerProcessor.models import Transaction
+from transactionManagerProcessor.models import (
+    Transaction,
+    TransactionCSV,
+)
 from transactionManagerProcessor.enums import Currency
 from datetime import datetime, timedelta
 from uuid import UUID, uuid4
 from collections.abc import Generator
 from django.conf import settings
 from pathlib import PosixPath
-from testcontainers.redis import RedisContainer
-from testcontainers.rabbitmq import RabbitMqContainer
-from transactionManager.utils import BACKEND_PORT_LOCK, BROKER_PORT_LOCK
+from transactionManager.settings_test import BASE_TEST_DIR
+from django.core.files import File
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 pytestmark = pytest.mark.django_db()
 
 
-@pytest.fixture
-def celery_deps(scope="session"):
-    BACKEND_PORT_LOCK.unlock_port()
-    BROKER_PORT_LOCK.unlock_port()
-    # TODO WARNING This is unsafe because ports can be locked by different processes at this point.
-    with (
-        RabbitMqContainer("rabbitmq:4.1.2-alpine").with_bind_ports(
-            5672, settings.PORT_BROKER
-        ),
-        RedisContainer("redis:8.0.3-bookworm").with_bind_ports(
-            6379, settings.PORT_RESULT_BACKEND
-        ),
-    ):
-        yield
+@pytest.fixture(autouse=True)
+def celery_app():
+    from transactionManager.celery import app
 
 
 @pytest.fixture(autouse=True)
@@ -133,3 +125,24 @@ def many_transactions_1k(
     _create_transations_batch(dt_gen, customer_id_a, product_id_b, 250)
     _create_transations_batch(dt_gen, customer_id_b, product_id_a, 250)
     _create_transations_batch(dt_gen, customer_id_b, product_id_b, 250)
+
+
+@pytest.fixture
+def transaction_csv() -> TransactionCSV:
+    csv_file_path = BASE_TEST_DIR / "files" / "test.csv"
+    csv_file = File(open(csv_file_path, mode="rb"), name="test.csv")
+    transaction = TransactionCSV.objects.create(file=csv_file)
+    return transaction
+
+
+@pytest.fixture
+def csv_file() -> SimpleUploadedFile:
+    csv_content = b"id,timestamp,amount,currency,customer_id,product_id,quantity\nd0466264-1384-4dc0-82d0-39e541b5c121,2025-07-02 20:48:45.336874,25.30,PLN,14245004-9354-4b77-8744-19e36372f4cd,0e64a915-9711-47f3-a640-be6f517546b1,5\nd1466264-1384-4dc0-82d0-39e541b5c121,2025-07-02 20:48:45.336874,25.30,CAD,14245004-9354-4b77-8744-19e36372f4cd,0e64a915-9711-47f3-a640-be6f517546b1,5"
+    filename = "test.csv"
+
+    csv_file = SimpleUploadedFile(
+        filename,
+        csv_content,
+        content_type="multipart/form-data",
+    )
+    return csv_file

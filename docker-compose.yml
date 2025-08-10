@@ -3,8 +3,8 @@ services:
     restart: always
     build: ./backend
     volumes:
-      - backend_logs_volume:/backend/transactionManager/logs
-      - backend_media_volume:/backend/transactionManager/media
+      - logs_volume:/backend/transactionManager/logs
+      - media_volume:/backend/transactionManager/media
     environment:
       DEBUG: ${DEBUG?Variable not set}
       SECRET_KEY: ${SECRET_KEY?Variable not set}
@@ -17,7 +17,7 @@ services:
       CELERY_BROKER_URL: ${BROKER?Variable not set}
       CELERY_RESULT_BACKEND: ${RESULT_BACKEND?Variable not set}
     depends_on:
-      backend_db:
+      db:
         condition: service_healthy
         restart: true
       celery:
@@ -30,8 +30,8 @@ services:
     build: ./backend
     command: python -m celery -A transactionManager worker
     volumes:
-      - backend_logs_volume:/backend/transactionManager/logs
-      - backend_media_volume:/backend/transactionManager/media
+      - logs_volume:/backend/transactionManager/logs
+      - media_volume:/backend/transactionManager/media
     environment:
       DEBUG: ${DEBUG?Variable not set}
       SECRET_KEY: ${SECRET_KEY?Variable not set}
@@ -56,11 +56,11 @@ services:
       timeout: 5s
       retries: 3
 
-  backend_db:
+  db:
     image: postgres:17-alpine
     restart: always
     volumes:
-      - backend_db_volume:/var/lib/postgresql/data
+      - db_volume:/var/lib/postgresql/data
     environment:
       POSTGRES_DB: ${POSTGRES_DB?Variable not set}
       POSTGRES_USER: ${POSTGRES_USER?Variable not set}
@@ -113,7 +113,7 @@ services:
       retries: 5
 
 volumes:
-  backend_db_volume:
-  backend_logs_volume:
-  backend_media_volume:
+  db_volume:
+  logs_volume:
+  media_volume:
   rabbitmq_volume:

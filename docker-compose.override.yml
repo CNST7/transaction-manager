@@ -2,14 +2,14 @@ services:
   backend:
     restart: no
     environment:
-      DEBUG=1
+      DEBUG: 1
 
   celery:
     restart: no
     environment:
-      - DEBUG=1
+      DEBUG: 1
 
-  backend_db:
+  db:
     restart: no
     ports:
       - 5432:5432

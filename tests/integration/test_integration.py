@@ -1,75 +1,81 @@
 import requests
 import time
-import pytest
 from testcontainers.compose import DockerCompose
 from pathlib import Path
 from os import walk
-from celery import states
+from transactionManagerProcessor.enums import ProcessingStatus
 
 PROJ_DIR = Path(__file__).resolve().parent.parent.parent
 BASE_URL = "http://localhost"
 
 
-@pytest.mark.slow
 def test_upload_transaction():
     """
-    Tests nginx, django, postgres, celery, rabbitmq
+    Test stack: nginx, django, rabbitmq, celery, postgresql
     """
-    assert (True, "") == _is_proj_dir_set_properly()
-    compose = _compose()
+    if not _is_proj_directory_set_properly():
+        raise Exception(
+            f"Improperly configured path to `docker-compose.yml`. Currently set to {PROJ_DIR=}"
+        )
+    compose = _build_project()
     with compose:
-
-        celery_task_id = _upload_transactions_file()
-
-        _ensure_celery_task_finished_successfuly(celery_task_id)
-
+        transaction_csv_id = _upload_csv()
+        _ensure_celery_task_finished_successfuly(transaction_csv_id)
         _assert_transaction_correctly_processed()
 
 
-def _is_proj_dir_set_properly():
+def _is_proj_directory_set_properly():
     filenames = next(walk(PROJ_DIR), (None, None, []))[2]
     is_docker_compose_file_in_proj_path = (
         True if "docker-compose.yml" in filenames else False
     )
     if not is_docker_compose_file_in_proj_path:
-        return (
-            False,
-            f"Improperly configured path to `docker-compose.yml`. Currently set to {PROJ_DIR=}",
-        )
-    return True, ""
+        return False
+    return True
 
 
-def _compose() -> DockerCompose:
+def _build_project() -> DockerCompose:
     return DockerCompose(
         PROJ_DIR,
-        compose_file_name="docker-compose.yml",
-        keep_volumes=True,
+        compose_file_name=("docker-compose.yml", "docker-compose.test.yml"),
         pull=True,
         build=True,
+        keep_volumes=True,
+        env_file=".env",
     )
 
 
-def _upload_transactions_file():
+def _upload_csv():
     url = f"{BASE_URL}/transactions/upload"
     file_path = PROJ_DIR / "tests" / "files" / "test.csv"
     with open(file_path, "rb") as f:
         file_bin = {"file": ("test.csv", f)}
         response = requests.post(url, files=file_bin)
+        transaction_csv_id = response.json().get("transaction_csv_id")
         assert response.status_code == 200
-        celery_task_id = response.json().get("celery_task_id")
-        assert celery_task_id
-    return celery_task_id
+        assert transaction_csv_id
+    return transaction_csv_id
 
 
-def _ensure_celery_task_finished_successfuly(celery_task_id, timeout=15):
-    url = f"{BASE_URL}/transactions/processing-status/{celery_task_id}"
+_statuses_indicating_finished_processing = (
+    ProcessingStatus.SUCCESS,
+    ProcessingStatus.FAIL,
+)
+
+
+def _ensure_celery_task_finished_successfuly(transaction_csv_id, timeout=15):
+    url = f"{BASE_URL}/transactions/processing-status/{transaction_csv_id}"
     for _ in range(timeout):
         r = requests.get(url)
-        if r.status_code == 200 and r.json().get("task_status") == states.SUCCESS:
+        processing_status = ProcessingStatus(r.json().get("status"))
+        if (
+            r.status_code == 200
+            and processing_status in _statuses_indicating_finished_processing
+        ):
             return True
         time.sleep(1)
     raise Exception(
-        f"Celery task {celery_task_id} did not finish in time {timeout=}. {r.status_code=} {r.json().get("task_status")=} {url=}"
+        f"Process transaction csv timeout after {timeout=}. {transaction_csv_id=} {r.status_code=} {processing_status=} {url=}"
     )
 
 
