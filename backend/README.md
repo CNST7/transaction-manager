@@ -1,43 +1,78 @@
-# Backend
+# Transaction Manager Backend
 
-## TODO
+## Local development workflow
 
-- uporządkowanie testów
-- validacja csv - użycie `ModelSerializer'a` aby constrainy pochodziły z jednego źródła
-- `product_id` i `customer_id` jako klucze obce
-- pola lub model na metadane tranzakcji:
-  - kto wgrywał plik
-  - kiedy
-  - powiązane dane tranzacykcyjne
-- logowanie
-- handlowanie wyjątków
-- zadania dodatkowe
-- równoległe odpalanie testów
-  - pytest-xdist
-    > narazie bez, bo dłużej trwa utworzenie procesów niż odpalanie ich szeregowo.
-    > Może to być przydatne przy większej ich ilości
-- pre-commit
-  - narzędzia do statycznej analizy
-  - uruchamianie testów
-  - lintowanie (black)
-- ustawienia produkcyjne
-- ci/cd
-- rozbicie `requirements.txt` (nie potrzebujemy narzędzi developerskich na produkcji)
-- [x] celery, redis (np. do cache'owania raportów)
-- `uv` zamiast `venv`
-- `SECRET_KEY` nie powinien być na gicie!
-- [x] zmienne w `settings.py` ze zmiennych środowiskowych (plik `.env`)
-- dokumentacja (swagger)
-- serwowanie plików statycznych
+1. **Create and activate a virtual environment**
 
-### DONE
+   ```sh
+   cd backend
+   python -m venv venv
+   source venv/bin/activate
+   ```
 
-- [x] postresql jako baza danych
-- [x] brakuje volumenu dla bazy danych
-- [x] volumen dla logów
+2. **Install dependencies**
 
-## docker compose
+   ```sh
+   pip install -r requirements.txt
+   ```
 
-Zrobiłem na szybko, ale bez postgres'a. :\
-Nie wiem czy utworzą się logi w `logs/` w kontenerze. (Możliwe że brakuje `chmod`'a w Dockerfile)
-Nie zdążyłem przetesować czy wszystko jest poprawnie skonteneryzowane.
+3. **Set PYTHONPATH**
+
+   ```sh
+   export PYTHONPATH=$PYTHONPATH:$(pwd)/backend/transactionManager
+   ```
+
+4. **Apply migrations**
+
+   ```sh
+   cd backend/transactionManager
+   python manage.py migrate --settings=transactionManager.settings_dev
+   ```
+
+5. **Run development server**
+
+   ```sh
+   python manage.py runserver --settings=transactionManager.settings_dev
+   ```
+
+   API will be available at [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
+
+## Docker watch
+
+If whole stack is needed you can use docker watch for development
+
+```sh
+docker compose up -w
+```
+
+or
+
+```sh
+docker compose watch
+```
+
+## Testing
+
+Run tests:
+
+```sh
+pytest backend
+```
+
+To skip slow, integration tests:
+
+```sh
+pytest backend -m "not integration"
+```
+
+## VS Code
+
+Configuration is already there.
+Just press F5 in vscode with python interpreter set at `backend/venv/bin/python`
+Also test suite is available through the VS Code Python tests tab.
+
+Uncomment following line in [.vscode/settings.json](../.vscode/settings.json#4) to run only unit tests with `ctrl` + `;` `a` shortcut.
+
+```json
+// "-m", "not integration",
+```
