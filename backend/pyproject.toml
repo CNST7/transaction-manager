@@ -5,4 +5,4 @@ DJANGO_SETTINGS_MODULE = "transactionManager.settings_test"
 # "-n auto" causes errors in vscode (requires psutil: pytest-xdist[psutil])
 addopts = ["--import-mode=importlib", "-n 2", "-p no:cacheprovider"]
 
-markers = ["slow: marks slow tests"]
+markers = ["integration: marks integration tests"]

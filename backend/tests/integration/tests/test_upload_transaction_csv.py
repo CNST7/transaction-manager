@@ -1,3 +1,4 @@
+import pytest
 import requests
 import time
 from testcontainers.compose import DockerCompose
@@ -5,11 +6,12 @@ from pathlib import Path
 from os import walk
 from transactionManagerProcessor.enums import ProcessingStatus
 
-PROJ_DIR = Path(__file__).resolve().parent.parent.parent
+PROJ_DIR = Path(__file__).resolve().parent.parent.parent.parent.parent
 BASE_URL = "http://localhost"
 
 
-def test_upload_transaction():
+@pytest.mark.integration
+def test_upload_transaction_csv():
     """
     Test stack: nginx, django, rabbitmq, celery, postgresql
     """
@@ -47,8 +49,10 @@ def _build_project() -> DockerCompose:
 
 def _upload_csv():
     url = f"{BASE_URL}/transactions/upload"
-    file_path = PROJ_DIR / "tests" / "files" / "test.csv"
-    with open(file_path, "rb") as f:
+    transaction_csv_path = (
+        PROJ_DIR / "backend" / "tests" / "integration" / "fixtures" / "test.csv"
+    )
+    with open(transaction_csv_path, "rb") as f:
         file_bin = {"file": ("test.csv", f)}
         response = requests.post(url, files=file_bin)
         transaction_csv_id = response.json().get("transaction_csv_id")

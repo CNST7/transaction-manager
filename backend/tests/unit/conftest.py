@@ -124,7 +124,7 @@ def many_transactions_1k(
 
 @pytest.fixture
 def transaction_csv() -> TransactionCSV:
-    csv_file_path = BASE_TEST_DIR / "files" / "test.csv"
+    csv_file_path = BASE_TEST_DIR / "unit" / "fixtures" / "test.csv"
     csv_file = File(open(csv_file_path, mode="rb"), name="test.csv")
     transaction = TransactionCSV.objects.create(file=csv_file)
     return transaction

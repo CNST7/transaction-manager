@@ -66,7 +66,7 @@ A modular Django-based backend for managing and reporting product transactions, 
 5. **Apply migrations**
    ```sh
    cd backend/transactionManager
-   python manage.py migrate --settings=transactionManager.settings_dev
+   python manage.py migrate --settings=transactionManager.settings_local
    ```
 6. **Run local rabbitmq instance**
 
@@ -95,7 +95,7 @@ A modular Django-based backend for managing and reporting product transactions, 
 
 8. **Run the development server**
    ```sh
-   python manage.py runserver --settings=transactionManager.settings_dev
+   python manage.py runserver --settings=transactionManager.settings_local
    ```
    The API will be available at [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
 
