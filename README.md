@@ -25,6 +25,6 @@ then visit [localhost](http://localhost/)
 
 Backend docs: [backend/README.md](backend/README.md)
 
-## 👨‍💻 **Author:**
+## 👨‍💻 Author
 
 Michał Jarek
