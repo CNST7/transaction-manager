@@ -17,11 +17,6 @@ pytestmark = pytest.mark.django_db()
 
 
 @pytest.fixture(autouse=True)
-def celery_app():
-    from transactionManager.celery import app
-
-
-@pytest.fixture(autouse=True)
 def temp_media_root(tmp_path: PosixPath, settings):
     temp_dir = tmp_path / "media"
     temp_dir.mkdir()

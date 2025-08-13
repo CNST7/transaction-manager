@@ -9,7 +9,7 @@
             "type": "debugpy",
             "request": "launch",
             "args": [
-                "runserver", "--settings=transactionManager.settings_local"
+                "runserver", "--settings=transactionManager.settings_dev"
             ],
             "django": true,
             "autoStartBrowser": false,

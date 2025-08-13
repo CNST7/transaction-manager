@@ -1,11 +1,43 @@
 services:
   backend:
     restart: no
+    build:
+      context: ./backend
+    ports:
+      - 8000:8000
+    command: uvicorn transactionManager.asgi:application --reload --host 0.0.0.0 --port 8000
+    develop:
+      watch:
+        - action: sync
+          path: ./backend/transactionManager
+          target: /backend/transactionManager
+        - action: rebuild
+          path: ./backend/pyproject.toml
+        - action: rebuild
+          path: ./backend/requirements.txt
     environment:
       DEBUG: 1
 
   celery:
     restart: no
+    develop:
+      watch:
+        - action: sync
+          path: ./backend/transactionManager
+          target: /backend/transactionManager
+        - action: rebuild
+          path: ./backend/pyproject.toml
+        - action: rebuild
+          path: ./backend/requirements.txt
+        - action: sync+restart
+          path: ./backend/transactionManager/transactionManagerProcessor/tasks.py
+          target: /backend/transactionManager/transactionManagerProcessor/tasks.py
+        - action: sync+restart
+          path: ./backend/transactionManager/transactionManager/settings.py
+          target: /backend/transactionManager/transactionManager/settings.py
+        - action: sync+restart
+          path: ./backend/transactionManager/transactionManager/celery.py
+          target: /backend/transactionManager/transactionManager/celery.py
     environment:
       DEBUG: 1
 

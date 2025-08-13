@@ -1,0 +1,5 @@
+transactionManager/db.sqlite3
+transactionManager/logs/*.log
+transactionManager/logs/.gitkeep
+transactionManager/media/csv_transactions_files/*.csv
+transactionManager/media/csv_transactions_files/.gitkeep
