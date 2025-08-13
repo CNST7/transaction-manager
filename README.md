@@ -13,18 +13,18 @@
 - 🧪 [Pytest](https://docs.pytest.org/en/stable/)
 - 🌐 [NGINX](https://nginx.org/en/)
 
-## 🚀 Run
+## 🚀 Start project
 
-Run command:
+To start project run following command:
 
 `docker compose up --build`
 
 then visit [localhost](http://localhost/)
 
-### 💻 Backend Development
+## 💻 Backend Development
 
-Backend docs: [backend/development.md](backend/README.md)
+Backend docs: [backend/README.md](backend/README.md)
 
-### 👨‍💻 **Author:**
+## 👨‍💻 **Author:**
 
 Michał Jarek
