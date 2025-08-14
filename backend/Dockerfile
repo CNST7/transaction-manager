@@ -4,7 +4,7 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONPATH="/:/backend/transactionManager"
 
-RUN apt-get update && apt-get upgrade -y && apt-get clean
+RUN apt-get update && apt-get upgrade -y && apt-get clean && apt-get install -y curl
 RUN useradd -m -u 1000 backend
 WORKDIR /backend/transactionManager
 
