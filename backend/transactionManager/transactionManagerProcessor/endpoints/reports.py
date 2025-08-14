@@ -8,14 +8,11 @@ from transactionManagerProcessor.enums import Currency
 from transactionManagerProcessor.models import Transaction
 from rest_framework.views import APIView
 from pydantic import BaseModel, NonNegativeInt, Field
-from decimal import Decimal, getcontext
 from typing import Annotated
 from enum import Enum
 
 _ValidType = Enum("_ValidType", "VALID")
 _VALID = _ValidType.VALID
-
-# getcontext().prec = 2
 
 
 def _validate_uuid(value: str, label: str) -> Response | _ValidType:
