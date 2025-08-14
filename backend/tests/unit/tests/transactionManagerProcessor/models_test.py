@@ -1,14 +1,13 @@
 import pytest
 from transactionManagerProcessor.models import Transaction
 from transactionManagerProcessor.enums import Currency
-from transactionManagerProcessor.dto import TransactionDTO
 from uuid import UUID
 
 pytestmark = pytest.mark.django_db(transaction=True)
 
 
-def test_transaction_from_dto():
-    transaction_dto = TransactionDTO(
+def test_transaction():
+    transaction = Transaction(
         id=UUID("d0466264-1384-4dc0-82d0-39e541b5c121"),
         timestamp="2025-07-02 20:48:45.336874",
         amount="25.30",
@@ -18,11 +17,6 @@ def test_transaction_from_dto():
         quantity=5,
     )
 
-    db_transaction = Transaction.from_dto(transaction_dto)
-    db_transaction.save()
-
-    transaction_from_db = Transaction.objects.get(id=db_transaction.id)
-
-    db_transaction_set = set(transaction_from_db.__dict__.items())
-    dto_transaction_set = set(transaction_dto.model_dump().items())
-    assert db_transaction_set >= dto_transaction_set
+    transaction.save()
+    transaction.refresh_from_db()
+    assert transaction

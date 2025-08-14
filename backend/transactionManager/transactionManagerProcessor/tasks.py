@@ -1,16 +1,15 @@
 import csv
 import logging
 from abc import ABC, abstractmethod
-from pydantic import ValidationError
+from rest_framework.serializers import ValidationError
 from django.db.utils import IntegrityError
 from celery import shared_task
 from transactionManagerProcessor.models import (
     ProcessingTracker,
-    Transaction,
     TransactionCSV,
     CSVProcessingStatus,
 )
-from transactionManagerProcessor.dto import TransactionDTO
+from transactionManagerProcessor.serializers import TransactionSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -40,14 +39,14 @@ def _process_transaction(
 ):
     try:
         try:
-            dto_transaction = TransactionDTO(**transaction_data)
-            db_transaction = Transaction.from_dto(dto_transaction)
-            db_transaction.save()
+            serializer = TransactionSerializer(data=transaction_data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
             logger.debug(f"PROCESSED DATA: {transaction_data}")
         except Exception as e:
             status_tracker.register_fail()
             raise
-    except ValidationError as e:
+    except ValidationError as e:  # TODO diff error
         logger.error(f"FAILED DATA: {transaction_data}")
     except IntegrityError as e:
         logger.error(f"TRANSACTION ALREADY EXIST {transaction_data}")

@@ -4,7 +4,6 @@ from typing import Protocol
 import uuid
 from decimal import Decimal
 from django.db import models
-from transactionManagerProcessor.dto import TransactionDTO
 from transactionManagerProcessor.enums import Currency, ProcessingStatus
 from naivedatetimefield import NaiveDateTimeField
 from django.core.validators import MinValueValidator
@@ -31,11 +30,11 @@ class Transaction(models.Model):
     currency = models.CharField(max_length=3, choices=_get_currencies)
     customer_id = models.UUIDField(default=uuid.uuid4, db_index=True)
     product_id = models.UUIDField(default=uuid.uuid4, db_index=True)
-    quantity = models.PositiveSmallIntegerField()
-
-    @staticmethod
-    def from_dto(transaction_dto: TransactionDTO) -> Transaction:
-        return Transaction(**transaction_dto.model_dump())
+    quantity = models.PositiveSmallIntegerField(
+        validators=[
+            MinValueValidator(1),
+        ],
+    )
 
 
 class TransactionCSV(models.Model):
