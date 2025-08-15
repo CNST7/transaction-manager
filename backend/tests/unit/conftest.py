@@ -59,6 +59,37 @@ def single_transaction(
     )
 
 
+@pytest.fixture
+def three_transactions(customer_id_a: UUID, product_id_a: UUID, scope="session"):
+    Transaction.objects.create(
+        id=UUID("d2993a99-3358-41af-8047-070fa648d079"),
+        timestamp="2025-07-02 20:48:45.336874",
+        amount=10.00,
+        currency=Currency.PLN,
+        customer_id=customer_id_a,
+        product_id=product_id_a,
+        quantity=10,
+    )
+    Transaction.objects.create(
+        id=UUID("ddaf9b82-1bf5-44b5-89ff-45816857403b"),
+        timestamp="2025-07-25 20:48:45.336874",
+        amount=20.50,
+        currency=Currency.PLN,
+        customer_id=customer_id_a,
+        product_id=product_id_a,
+        quantity=1,
+    )
+    Transaction.objects.create(
+        id=UUID("d0466264-1384-4dc0-82d0-39e541b5c121"),
+        timestamp="2025-08-02 20:48:45.336874",
+        amount=25.30,
+        currency=Currency.PLN,
+        customer_id=customer_id_a,
+        product_id=product_id_a,
+        quantity=5,
+    )
+
+
 def _create_transations_batch(
     dt_gen: Generator[datetime, None, None],
     customer_id: UUID,

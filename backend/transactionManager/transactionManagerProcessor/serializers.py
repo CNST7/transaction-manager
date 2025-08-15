@@ -33,3 +33,8 @@ class CSVProcessingStatusSerializer(serializers.ModelSerializer):
     class Meta:
         model = CSVProcessingStatus
         fields = ["status", "no_fails", "no_successes"]
+
+
+class ReportQueryParamsSerializer(serializers.Serializer):
+    date_from = serializers.DateField(required=False)
+    date_to = serializers.DateField(required=False)

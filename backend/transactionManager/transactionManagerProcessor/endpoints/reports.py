@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime, timedelta
 from decimal import ROUND_HALF_UP, Decimal
 from uuid import UUID
 from rest_framework import status
@@ -10,6 +10,8 @@ from rest_framework.views import APIView
 from pydantic import BaseModel, NonNegativeInt, Field
 from typing import Annotated
 from enum import Enum
+
+from transactionManagerProcessor.serializers import ReportQueryParamsSerializer
 
 _ValidType = Enum("_ValidType", "VALID")
 _VALID = _ValidType.VALID
@@ -38,6 +40,12 @@ _currency_exchange_to_PLN: dict[Currency, Decimal] = {
 }
 
 
+class ReportQueryParams:
+    def __init__(self, date_from: date | None = None, date_to: date | None = None):
+        self.date_from = date_from
+        self.date_to = date_to + timedelta(days=1) if date_to else date_to
+
+
 class CustomerSummary(BaseModel):
     total_amount: Annotated[Decimal, Field(ge=0, max_digits=20, decimal_places=2)]
     unique_products: NonNegativeInt
@@ -51,6 +59,16 @@ class CustomerSummaryEndpoint(APIView):
             return validation_result
 
         transactions = Transaction.objects.filter(customer_id=customer_id)
+
+        serializer = ReportQueryParamsSerializer(data=request.query_params)
+        serializer.is_valid(raise_exception=True)
+        query_params = ReportQueryParams(**serializer.validated_data)
+
+        if query_params.date_from:
+            transactions = transactions.filter(timestamp__gte=query_params.date_from)
+
+        if query_params.date_to:
+            transactions = transactions.filter(timestamp__lt=query_params.date_to)
 
         last_transaction: datetime | None = None
         unique_products = set()
@@ -105,6 +123,16 @@ class ProductSummaryEndpoint(APIView):
             return validation_result
 
         transactions = Transaction.objects.filter(product_id=product_id)
+
+        serializer = ReportQueryParamsSerializer(data=request.query_params)
+        serializer.is_valid(raise_exception=True)
+        query_params = ReportQueryParams(**serializer.validated_data)
+
+        if query_params.date_from:
+            transactions = transactions.filter(timestamp__gte=query_params.date_from)
+
+        if query_params.date_to:
+            transactions = transactions.filter(timestamp__lt=query_params.date_to)
 
         total_quantity = 0
         total_amount = Decimal(0)
