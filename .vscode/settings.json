@@ -1,7 +1,7 @@
 {
     "python.testing.pytestArgs": [
         "backend",
-        // "-m", "not integration",
+        "-m", "not integration",
     ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,

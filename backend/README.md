@@ -71,7 +71,7 @@ Configuration is already there.
 Just press F5 in vscode with python interpreter set at `backend/venv/bin/python`
 Also test suite is available through the VS Code Python tests tab.
 
-Uncomment following line in [.vscode/settings.json](../.vscode/settings.json#4) to run only unit tests with `ctrl` + `;` `a` shortcut.
+Comment following line in [.vscode/settings.json](../.vscode/settings.json#4) to run integration tests.
 
 ```json
 // "-m", "not integration",
