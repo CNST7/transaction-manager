@@ -5,6 +5,7 @@ services:
     volumes:
       - logs_volume:/backend/transactionManager/logs
       - media_volume:/backend/transactionManager/media
+      - static_volume:/backend/transactionManager/static
     environment:
       DEBUG: ${DEBUG?Variable not set}
       SECRET_KEY: ${SECRET_KEY?Variable not set}
@@ -109,6 +110,7 @@ services:
       - 443:443
     volumes:
       - ./gateway/nginx.conf:/etc/nginx/conf.d/default.conf
+      - static_volume:/backend/transactionManager/static
     depends_on:
       backend:
         condition: service_healthy
@@ -125,3 +127,4 @@ volumes:
   media_volume:
   rabbitmq_volume:
   redis_volume:
+  static_volume:
