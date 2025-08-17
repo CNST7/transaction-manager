@@ -94,6 +94,8 @@ services:
   redis:
     image: redis:8.0.3-bookworm
     restart: always
+    volumes:
+      - redis_volume:/data
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
@@ -122,3 +124,4 @@ volumes:
   logs_volume:
   media_volume:
   rabbitmq_volume:
+  redis_volume:
