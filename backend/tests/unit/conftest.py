@@ -1,17 +1,18 @@
+from collections.abc import Generator
+from datetime import datetime, timedelta
+from pathlib import PosixPath
+from uuid import UUID, uuid4
+
 import pytest
+from django.core.files import File
+from django.core.files.uploadedfile import SimpleUploadedFile
+from transactionManagerProcessor.enums import Currency
 from transactionManagerProcessor.models import (
     Transaction,
     TransactionCSV,
 )
-from transactionManagerProcessor.enums import Currency
-from datetime import datetime, timedelta
-from uuid import UUID, uuid4
-from collections.abc import Generator
-from django.conf import settings
-from pathlib import PosixPath
+
 from transactionManager.settings_test import BASE_TEST_DIR
-from django.core.files import File
-from django.core.files.uploadedfile import SimpleUploadedFile
 
 pytestmark = pytest.mark.django_db()
 

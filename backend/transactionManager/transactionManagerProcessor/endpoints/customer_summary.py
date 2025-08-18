@@ -1,15 +1,17 @@
 import logging
 from datetime import datetime
 from decimal import ROUND_HALF_UP, Decimal
-from rest_framework import status
-from rest_framework.response import Response
-from rest_framework.request import Request
-from transactionManagerProcessor.models import Transaction
-from rest_framework.views import APIView
-from pydantic import BaseModel, NonNegativeInt, Field
-from typing import Annotated
-from django.db.models.query import QuerySet
 from functools import partial
+from typing import Annotated
+
+from django.db.models.query import QuerySet
+from pydantic import BaseModel, Field, NonNegativeInt
+from rest_framework import status
+from rest_framework.request import Request
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from transactionManagerProcessor.models import Transaction
 from transactionManagerProcessor.utils.currency_exchange import PLN_currency_exchange
 from transactionManagerProcessor.utils.qs_builder import build_qs
 
@@ -43,7 +45,7 @@ def prepare_customer_summary(
                 * transaction.quantity
                 * PLN_currency_exchange[transaction.currency]
             )
-        except KeyError as e:
+        except KeyError:
             return Response(
                 {
                     "error": f"Generating customer summary failed. {transaction.id=} unknow currency {transaction.currency=}"

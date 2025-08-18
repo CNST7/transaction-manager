@@ -1,17 +1,18 @@
+from datetime import datetime
 from decimal import Decimal
 from uuid import UUID
+
 import pytest
+from transactionManagerProcessor.enums import Currency, ProcessingStatus
+from transactionManagerProcessor.models import (
+    CSVProcessingStatus,
+    Transaction,
+    TransactionCSV,
+)
 from transactionManagerProcessor.tasks import (
     CSVProcessingStatusManager,
     process_transaction_csv,
 )
-from transactionManagerProcessor.models import (
-    TransactionCSV,
-    CSVProcessingStatus,
-    Transaction,
-)
-from datetime import datetime
-from transactionManagerProcessor.enums import Currency, ProcessingStatus
 
 pytestmark = pytest.mark.django_db(transaction=True)
 

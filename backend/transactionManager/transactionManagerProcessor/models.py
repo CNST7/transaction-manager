@@ -1,12 +1,15 @@
 from __future__ import annotations
-from abc import abstractmethod
-from typing import Protocol
+
 import uuid
+from abc import abstractmethod
 from decimal import Decimal
-from django.db import models
-from transactionManagerProcessor.enums import Currency, ProcessingStatus
-from naivedatetimefield import NaiveDateTimeField
+from typing import Protocol
+
 from django.core.validators import MinValueValidator
+from django.db import models
+from naivedatetimefield import NaiveDateTimeField
+
+from transactionManagerProcessor.enums import Currency, ProcessingStatus
 
 
 def _get_currencies():

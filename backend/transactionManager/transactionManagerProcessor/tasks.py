@@ -1,13 +1,15 @@
 import csv
 import logging
 from abc import ABC, abstractmethod
-from rest_framework.serializers import ValidationError
-from django.db.utils import IntegrityError
+
 from celery import shared_task
+from django.db.utils import IntegrityError
+from rest_framework.serializers import ValidationError
+
 from transactionManagerProcessor.models import (
+    CSVProcessingStatus,
     ProcessingTracker,
     TransactionCSV,
-    CSVProcessingStatus,
 )
 from transactionManagerProcessor.serializers import TransactionSerializer
 
@@ -43,14 +45,14 @@ def _process_transaction(
             serializer.is_valid(raise_exception=True)
             serializer.save()
             logger.debug(f"PROCESSED DATA: {transaction_data}")
-        except Exception as e:
+        except Exception:
             status_tracker.register_fail()
             raise
-    except ValidationError as e:  # TODO diff error
+    except ValidationError:  # TODO diff error
         logger.error(f"FAILED DATA: {transaction_data}")
-    except IntegrityError as e:
+    except IntegrityError:
         logger.error(f"TRANSACTION ALREADY EXIST {transaction_data}")
-    except Exception as e:
+    except Exception:
         logger.error(
             f"FAILED TO CREATE TRANSACTION, UNHANDLED ERROR {transaction_data}"
         )

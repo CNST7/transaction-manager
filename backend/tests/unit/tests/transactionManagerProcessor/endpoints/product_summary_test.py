@@ -1,8 +1,8 @@
-import pytest
 from uuid import UUID
+
+import pytest
 from django.test.client import Client
 from django.urls import reverse
-
 
 pytestmark = pytest.mark.django_db(transaction=True)
 

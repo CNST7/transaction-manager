@@ -1,6 +1,7 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from .models import TransactionCSV, CSVProcessingStatus
+
+from .models import CSVProcessingStatus, TransactionCSV
 
 
 @receiver(post_save, sender=TransactionCSV)

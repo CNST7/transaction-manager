@@ -12,7 +12,7 @@
 2. **Install dependencies**
 
    ```sh
-   pip install -r backend/requirements.txt -r backend/requirements.test.txt
+   pip install -r backend/requirements.txt -r backend/requirements.dev.txt -r backend/requirements.test.txt
    ```
 
 3. **Set PYTHONPATH**

@@ -6,4 +6,4 @@ class TransactionmanagerprocessorConfig(AppConfig):
     name = "transactionManagerProcessor"
 
     def ready(self):
-        import transactionManagerProcessor.signals
+        import transactionManagerProcessor.signals  # noqa: F401

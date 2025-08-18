@@ -1,7 +1,8 @@
-import pytest
-from transactionManagerProcessor.models import Transaction
-from transactionManagerProcessor.enums import Currency
 from uuid import UUID
+
+import pytest
+from transactionManagerProcessor.enums import Currency
+from transactionManagerProcessor.models import Transaction
 
 pytestmark = pytest.mark.django_db(transaction=True)
 

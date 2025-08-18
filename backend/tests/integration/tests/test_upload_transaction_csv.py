@@ -1,9 +1,10 @@
+import time
+from os import walk
+from pathlib import Path
+
 import pytest
 import requests
-import time
 from testcontainers.compose import DockerCompose
-from pathlib import Path
-from os import walk
 from transactionManagerProcessor.enums import ProcessingStatus
 
 PROJ_DIR = Path(__file__).resolve().parent.parent.parent.parent.parent

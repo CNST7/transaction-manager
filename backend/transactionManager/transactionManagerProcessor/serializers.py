@@ -1,8 +1,10 @@
-from rest_framework import serializers
-from transactionManagerProcessor.models import CSVProcessingStatus, Transaction
-from django.utils.timezone import make_naive
-from django.db import models
 from datetime import datetime
+
+from django.db import models
+from django.utils.timezone import make_naive
+from rest_framework import serializers
+
+from transactionManagerProcessor.models import CSVProcessingStatus, Transaction
 
 
 class _NaiveDateTimeField(serializers.DateTimeField):

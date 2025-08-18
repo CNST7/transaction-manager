@@ -1,5 +1,6 @@
-from transactionManagerProcessor.enums import Currency
 from decimal import Decimal
+
+from transactionManagerProcessor.enums import Currency
 
 PLN_currency_exchange: dict[Currency, Decimal] = {
     Currency.PLN: Decimal("1.00"),

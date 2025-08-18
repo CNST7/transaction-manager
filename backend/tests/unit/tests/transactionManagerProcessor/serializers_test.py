@@ -1,9 +1,10 @@
-import pytest
 from contextlib import nullcontext as does_not_raise
-from transactionManagerProcessor.serializers import TransactionSerializer
-from transactionManagerProcessor.enums import Currency
 from uuid import UUID
+
+import pytest
 from rest_framework.serializers import ValidationError
+from transactionManagerProcessor.enums import Currency
+from transactionManagerProcessor.serializers import TransactionSerializer
 
 pytestmark = pytest.mark.django_db(transaction=True)
 

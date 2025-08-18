@@ -1,12 +1,12 @@
-import pytest
 from uuid import UUID
+
+import pytest
 from django.core.exceptions import FieldError
 from rest_framework.serializers import ValidationError
-
+from transactionManagerProcessor.models import Transaction
 from transactionManagerProcessor.utils.qs_builder import (
     build_qs,
 )
-from transactionManagerProcessor.models import Transaction
 
 pytestmark = pytest.mark.django_db(transaction=True)
 

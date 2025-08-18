@@ -1,9 +1,9 @@
 from collections.abc import Iterable
 from datetime import date, timedelta
 from uuid import UUID
-from transactionManagerProcessor.models import Transaction
-from django.db.models.query import QuerySet
 
+from django.db.models.query import QuerySet
+from transactionManagerProcessor.models import Transaction
 from transactionManagerProcessor.serializers import (
     IDSerializer,
     QueryParamsSerializer,
@@ -35,7 +35,7 @@ def build_qs(
     id: str,
     date_from: str | None = None,
     date_to: str | None = None,
-    **kwargs,
+    **kwargs,  # noqa: ARG001
 ) -> QuerySet[Transaction]:
 
     id_serializer = IDSerializer(data={"id": id})

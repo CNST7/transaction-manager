@@ -1,10 +1,11 @@
-import pytest
 from typing import Any
+from urllib.parse import urlencode
 from uuid import UUID
+
+import pytest
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test.client import Client
 from django.urls import reverse
-from django.core.files.uploadedfile import SimpleUploadedFile
-from urllib.parse import urlencode
 from transactionManagerProcessor.enums import ProcessingStatus
 from transactionManagerProcessor.models import Transaction, TransactionCSV
 
@@ -23,7 +24,7 @@ class TestTransations_Upload:
             {"file": csv_file},
             format="multipart",
             headers={
-                f"content_disposition": "attachment; filename={filename}",
+                "content_disposition": "attachment; filename={filename}",
             },
         )
         content: dict[str, Any] = response.json()
@@ -63,11 +64,11 @@ class TestTransations_List:
             "quantity",
         )
         assert all(
-            (field in response.json().get("results")[0] for field in transaction_fields)
+            field in response.json().get("results")[0] for field in transaction_fields
         )
 
         pagination_fields = "next", "previous", "results", "count"
-        assert all((field in response.json() for field in pagination_fields))
+        assert all(field in response.json() for field in pagination_fields)
 
         assert response.json().get("count") == 1000
         assert len(response.json().get("results")) == 100
@@ -159,7 +160,7 @@ class TestTransations_ProcessingStatus:
             {"file": csv_file},
             format="multipart",
             headers={
-                f"content_disposition": "attachment; filename={filename}",
+                "content_disposition": "attachment; filename={filename}",
             },
         )
 
