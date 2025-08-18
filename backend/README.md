@@ -30,7 +30,7 @@
 5. **Collect static files**
 
    ```sh
-   python backend/transactionManager/manage.py collectstatic --settings=transactionManager.settings_dev
+   python backend/transactionManager/manage.py collectstatic --settings=transactionManager.settings_dev --clear
    ```
 
 6. **Run development server**
