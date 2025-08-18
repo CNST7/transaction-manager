@@ -3,6 +3,7 @@ services:
     restart: no
     build:
       context: ./backend
+    # command: sleep infinity
     ports:
       - 8000:8000
     develop:
