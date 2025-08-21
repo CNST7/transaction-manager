@@ -125,7 +125,6 @@ def many_transactions_40(
     product_id_b: UUID,
     scope="session",
 ):
-
     dt_gen = _datetime_gen()
 
     _create_transations_batch(

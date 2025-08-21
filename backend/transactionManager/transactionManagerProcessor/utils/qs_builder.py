@@ -37,7 +37,6 @@ def build_qs(
     date_to: str | None = None,
     **kwargs,  # noqa: ARG001
 ) -> QuerySet[Transaction]:
-
     id_serializer = IDSerializer(data={"id": id})
     id_serializer.is_valid(raise_exception=True)
     path_param = _ReportPathParam(**id_serializer.validated_data)

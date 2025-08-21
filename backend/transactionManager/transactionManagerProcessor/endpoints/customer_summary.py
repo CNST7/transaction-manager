@@ -38,7 +38,6 @@ def prepare_customer_summary(
     total_amount = Decimal(0)
 
     for transaction in transactions:
-
         try:
             total_amount += (
                 transaction.amount
