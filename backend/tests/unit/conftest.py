@@ -6,13 +6,12 @@ from uuid import UUID, uuid4
 import pytest
 from django.core.files import File
 from django.core.files.uploadedfile import SimpleUploadedFile
+from transactionManager.settings_test import BASE_TEST_DIR
 from transactionManagerProcessor.enums import Currency
 from transactionManagerProcessor.models import (
     Transaction,
     TransactionCSV,
 )
-
-from transactionManager.settings_test import BASE_TEST_DIR
 
 pytestmark = pytest.mark.django_db()
 

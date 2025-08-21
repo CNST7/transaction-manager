@@ -37,5 +37,5 @@ keep-runtime-typing = true
 # ignore unused import:
 "__init__.py" = ["F401"]
 # ingore unused arg:
-"transactionManager/transactionManagerProcessor/signals.py" = ["ARG001"]
+"signals.py" = ["ARG001"]
 "conftest.py" = ["ARG001"]

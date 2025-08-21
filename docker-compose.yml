@@ -114,7 +114,7 @@ services:
     depends_on:
       backend:
         condition: service_healthy
-        restart: true 
+        restart: true
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://127.0.0.1/" ]
       interval: 5s

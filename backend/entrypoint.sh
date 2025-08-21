@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e 
+set -e
 
 python manage.py migrate --no-input
 

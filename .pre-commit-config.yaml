@@ -1,0 +1,39 @@
+default_language_version:
+    python: python3.12
+
+repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v6.0.0
+  hooks:
+    - id: end-of-file-fixer
+    - id: trailing-whitespace
+    - id: check-docstring-first
+    - id: check-toml
+    - id: check-yaml
+    - id: debug-statements
+    - id: end-of-file-fixer
+    - id: name-tests-test
+      args: [--pytest]
+- repo: local
+  hooks:
+    - id: format
+      name: ruff-format
+      language: system
+      types: [python]
+      entry: ruff format
+    - id: checks
+      name: ruff-check
+      language: system
+      types: [python]
+      entry: ruff check
+      args: [ --fix, --config=backend/pyproject.toml ]
+
+- repo: local
+  hooks:
+  - id: pytest
+    name: pytest
+    language: python
+    types: [python]
+    entry: pytest
+    args: [backend, -m, "not integration"]
+    pass_filenames: false

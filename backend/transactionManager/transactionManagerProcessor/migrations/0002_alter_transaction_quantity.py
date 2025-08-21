@@ -5,15 +5,16 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('transactionManagerProcessor', '0001_initial'),
+        ("transactionManagerProcessor", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='transaction',
-            name='quantity',
-            field=models.PositiveSmallIntegerField(validators=[django.core.validators.MinValueValidator(1)]),
+            model_name="transaction",
+            name="quantity",
+            field=models.PositiveSmallIntegerField(
+                validators=[django.core.validators.MinValueValidator(1)]
+            ),
         ),
     ]

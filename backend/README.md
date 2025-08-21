@@ -71,6 +71,21 @@ To skip slow, integration tests:
 pytest backend -m "not integration"
 ```
 
+## Contributing
+
+### pre-commit
+
+This project is using [pre-commit](https://pre-commit.com) tool.
+Run `pre-commit install` once.
+Now before each commit checks will be automaticly invoked.
+
+If you want to manually run checks use:
+`pre-commit run --all-files`
+
+If you want to ignore checks on commit run:
+`git commit --no-verify`
+which is **_highly discouraged!_**
+
 ## VS Code
 
 Configuration is already there.

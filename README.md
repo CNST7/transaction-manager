@@ -12,6 +12,7 @@
 - 🐳 [Docker compose](https://docs.docker.com/compose/)
 - 🧪 [Pytest](https://docs.pytest.org/en/stable/)
 - 🌐 [NGINX](https://nginx.org/en/)
+- ✨ [Pre-commit](https://pre-commit.com)
 
 ## 🚀 Start project
 
