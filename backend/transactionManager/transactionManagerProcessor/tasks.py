@@ -48,7 +48,7 @@ def _process_transaction(
         except Exception:
             status_tracker.register_fail()
             raise
-    except ValidationError:  # TODO diff error
+    except ValidationError:
         logger.error(f"FAILED DATA: {transaction_data}")
     except IntegrityError:
         logger.error(f"TRANSACTION ALREADY EXIST {transaction_data}")

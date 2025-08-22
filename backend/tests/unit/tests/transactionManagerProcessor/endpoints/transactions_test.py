@@ -6,6 +6,7 @@ import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test.client import Client
 from django.urls import reverse
+from rest_framework import status
 from transactionManagerProcessor.enums import ProcessingStatus
 from transactionManagerProcessor.models import Transaction, TransactionCSV
 
@@ -43,7 +44,7 @@ class TestTransations_List:
     def test_transactions_list(
         self,
         client: Client,
-        many_transactions_1k,
+        create_1000_transactions,
     ):
         url = reverse("transaction-list")
         response = client.get(
@@ -52,7 +53,7 @@ class TestTransations_List:
             content_type="application/json",
         )
 
-        assert response.status_code == 200
+        assert response.status_code == status.HTTP_200_OK
 
         transaction_fields = (
             "id",
@@ -76,7 +77,7 @@ class TestTransations_List:
     def test_transactions_list_filters_product_id(
         self,
         client: Client,
-        many_transactions_40,
+        create_1000_transactions,
         product_id_a: UUID,
     ):
         base_url = reverse("transaction-list")
@@ -89,7 +90,7 @@ class TestTransations_List:
             content_type="application/json",
         )
 
-        assert response.status_code == 200
+        assert response.status_code == status.HTTP_200_OK
 
         content: dict[str, Any] = response.json()
         transactions: list[dict[str, Any]] = content.get("results")
@@ -101,7 +102,7 @@ class TestTransations_List:
     def test_transactions_list_filters_customer_id(
         self,
         client: Client,
-        many_transactions_40,
+        create_1000_transactions,
         customer_id_a: UUID,
     ):
         base_url = reverse("transaction-list")
@@ -114,7 +115,7 @@ class TestTransations_List:
             content_type="application/json",
         )
 
-        assert response.status_code == 200
+        assert response.status_code == status.HTTP_200_OK
 
         unique_customers = {
             transaction.get("customer_id")
@@ -126,25 +127,25 @@ class TestTransations_List:
 class TestTransations_Retrieve:
     def test_transations_details(
         self,
-        single_transaction: Transaction,
+        few_transactions: list[Transaction],
         client: Client,
     ):
-        url = reverse("transaction-detail", kwargs={"pk": str(single_transaction.id)})
+        url = reverse("transaction-detail", args=[few_transactions[0].id])
         response = client.get(
             url,
             format="json",
             content_type="application/json",
         )
 
-        assert response.status_code == 200
+        assert response.status_code == status.HTTP_200_OK
         assert response.json() == {
-            "id": "d0466264-1384-4dc0-82d0-39e541b5c121",
+            "id": "d2993a99-3358-41af-8047-070fa648d079",
             "timestamp": "2025-07-02T20:48:45.336874Z",
-            "amount": "25.30",
+            "amount": "10.00",
             "currency": "PLN",
-            "customer_id": "a4245004-9354-4b77-8744-19e36372f4cd",
-            "product_id": "ae64a915-9711-47f3-a640-be6f517546b1",
-            "quantity": 5,
+            "customer_id": "51f53702-b492-47be-b20d-80b6852368dd",
+            "product_id": "985e4402-5d1e-404b-8254-968070a3c7c7",
+            "quantity": 10,
         }
 
 
@@ -172,7 +173,7 @@ class TestTransations_ProcessingStatus:
             kwargs={"transaction_csv_id": str(transaction_csv_id)},
         )
         response = client.get(url)
-        assert response.status_code == 200
+        assert response.status_code == status.HTTP_200_OK
         content = response.json()
         assert content == {
             "status": ProcessingStatus.PROCESSING,

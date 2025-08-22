@@ -31,8 +31,8 @@ class Transaction(models.Model):
         ],
     )
     currency = models.CharField(max_length=3, choices=_get_currencies)
-    customer_id = models.UUIDField(default=uuid.uuid4, db_index=True)
-    product_id = models.UUIDField(default=uuid.uuid4, db_index=True)
+    customer_id = models.UUIDField(db_index=True)
+    product_id = models.UUIDField(db_index=True)
     quantity = models.PositiveSmallIntegerField(
         validators=[
             MinValueValidator(1),

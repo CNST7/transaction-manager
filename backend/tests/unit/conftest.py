@@ -1,11 +1,12 @@
 from collections.abc import Generator
 from datetime import datetime, timedelta
 from pathlib import PosixPath
-from uuid import UUID, uuid4
+from uuid import UUID
 
 import pytest
 from django.core.files import File
 from django.core.files.uploadedfile import SimpleUploadedFile
+from model_bakery import baker
 from transactionManager.settings_test import BASE_TEST_DIR
 from transactionManagerProcessor.enums import Currency
 from transactionManagerProcessor.models import (
@@ -26,90 +27,60 @@ def temp_media_root(tmp_path: PosixPath, settings):
 
 @pytest.fixture
 def product_id_a(scope="session") -> UUID:
-    return UUID("a" + "e64a915-9711-47f3-a640-be6f517546b1")
+    return UUID("985e4402-5d1e-404b-8254-968070a3c7c7")
 
 
 @pytest.fixture
 def product_id_b(scope="session") -> UUID:
-    return UUID("b" + "e64a915-9711-47f3-a640-be6f517546b1")
+    return UUID("170cc51f-8755-4a6e-9c76-1992782902dc")
 
 
 @pytest.fixture
 def customer_id_a(scope="session") -> UUID:
-    return UUID("a" + "4245004-9354-4b77-8744-19e36372f4cd")
+    return UUID("51f53702-b492-47be-b20d-80b6852368dd")
 
 
 @pytest.fixture
 def customer_id_b(scope="session") -> UUID:
-    return UUID("b" + "4245004-9354-4b77-8744-19e36372f4cd")
+    return UUID("a036e9d1-d475-4f80-a106-160df1fc2882")
 
 
 @pytest.fixture
-def single_transaction(
+def few_transactions(
     customer_id_a: UUID, product_id_a: UUID, scope="session"
-) -> Transaction:
-    return Transaction.objects.create(
-        id=UUID("d0466264-1384-4dc0-82d0-39e541b5c121"),
-        timestamp="2025-07-02 20:48:45.336874",
-        amount=25.30,
-        currency=Currency.PLN,
-        customer_id=customer_id_a,
-        product_id=product_id_a,
-        quantity=5,
-    )
-
-
-@pytest.fixture
-def three_transactions(customer_id_a: UUID, product_id_a: UUID, scope="session"):
-    Transaction.objects.create(
-        id=UUID("d2993a99-3358-41af-8047-070fa648d079"),
-        timestamp="2025-07-02 20:48:45.336874",
-        amount=10.00,
-        currency=Currency.PLN,
-        customer_id=customer_id_a,
-        product_id=product_id_a,
-        quantity=10,
-    )
-    Transaction.objects.create(
-        id=UUID("ddaf9b82-1bf5-44b5-89ff-45816857403b"),
-        timestamp="2025-07-25 20:48:45.336874",
-        amount=20.50,
-        currency=Currency.PLN,
-        customer_id=customer_id_a,
-        product_id=product_id_a,
-        quantity=1,
-    )
-    Transaction.objects.create(
-        id=UUID("d0466264-1384-4dc0-82d0-39e541b5c121"),
-        timestamp="2025-08-02 20:48:45.336874",
-        amount=25.30,
-        currency=Currency.PLN,
-        customer_id=customer_id_a,
-        product_id=product_id_a,
-        quantity=5,
-    )
-
-
-def _create_transations_batch(
-    dt_gen: Generator[datetime, None, None],
-    customer_id: UUID,
-    product_id: UUID,
-    count: int = 10,
-    currency: Currency = Currency.PLN,
-):
-    for _ in range(count):
+) -> list[Transaction]:
+    return [
         Transaction.objects.create(
-            id=uuid4(),
-            timestamp=next(dt_gen),
-            amount=12.50,
-            currency=currency,
-            customer_id=customer_id,
-            product_id=product_id,
-            quantity=8,
-        )
+            id=UUID("d2993a99-3358-41af-8047-070fa648d079"),
+            timestamp="2025-07-02 20:48:45.336874",
+            amount=10.00,
+            currency=Currency.PLN,
+            customer_id=customer_id_a,
+            product_id=product_id_a,
+            quantity=10,
+        ),
+        Transaction.objects.create(
+            id=UUID("ddaf9b82-1bf5-44b5-89ff-45816857403b"),
+            timestamp="2025-07-25 20:48:45.336874",
+            amount=20.50,
+            currency=Currency.PLN,
+            customer_id=customer_id_a,
+            product_id=product_id_a,
+            quantity=1,
+        ),
+        Transaction.objects.create(
+            id=UUID("d0466264-1384-4dc0-82d0-39e541b5c121"),
+            timestamp="2025-08-02 20:48:45.336874",
+            amount=25.30,
+            currency=Currency.PLN,
+            customer_id=customer_id_a,
+            product_id=product_id_a,
+            quantity=5,
+        ),
+    ]
 
 
-def _datetime_gen():
+def _datetime_generator() -> Generator[datetime]:
     dt = datetime.fromisoformat("2025-07-03 15:03:52.593273")
     while True:
         yield dt
@@ -117,39 +88,75 @@ def _datetime_gen():
 
 
 @pytest.fixture
-def many_transactions_40(
+def create_1000_transactions(
     customer_id_a: UUID,
     customer_id_b: UUID,
     product_id_a: UUID,
     product_id_b: UUID,
     scope="session",
 ):
-    dt_gen = _datetime_gen()
+    dt_gen = _datetime_generator()
 
-    _create_transations_batch(
-        dt_gen, customer_id_a, product_id_a, currency=Currency.USD
+    baker.make(
+        "transactionManagerProcessor.Transaction",
+        _quantity=50,
+        customer_id=customer_id_a,
+        product_id=product_id_a,
+        currency=Currency.EUR,
+        timestamp=dt_gen,
+        amount=12.50,
+        quantity=8,
     )
-    _create_transations_batch(dt_gen, customer_id_a, product_id_b)
-    _create_transations_batch(dt_gen, customer_id_b, product_id_a)
-    _create_transations_batch(dt_gen, customer_id_b, product_id_b)
-
-
-@pytest.fixture
-def many_transactions_1k(
-    customer_id_a: UUID,
-    customer_id_b: UUID,
-    product_id_a: UUID,
-    product_id_b: UUID,
-    scope="session",
-):
-    dt_gen = _datetime_gen()
-
-    _create_transations_batch(dt_gen, customer_id_a, product_id_a, 50, Currency.EUR)
-    _create_transations_batch(dt_gen, customer_id_a, product_id_a, 150)
-    _create_transations_batch(dt_gen, customer_id_a, product_id_a, 50, Currency.USD)
-    _create_transations_batch(dt_gen, customer_id_a, product_id_b, 250)
-    _create_transations_batch(dt_gen, customer_id_b, product_id_a, 250)
-    _create_transations_batch(dt_gen, customer_id_b, product_id_b, 250)
+    baker.make(
+        "transactionManagerProcessor.Transaction",
+        _quantity=50,
+        customer_id=customer_id_a,
+        product_id=product_id_a,
+        currency=Currency.USD,
+        timestamp=dt_gen,
+        amount=12.50,
+        quantity=8,
+    )
+    baker.make(
+        "transactionManagerProcessor.Transaction",
+        _quantity=150,
+        customer_id=customer_id_a,
+        product_id=product_id_a,
+        currency=Currency.PLN,
+        timestamp=dt_gen,
+        amount=12.50,
+        quantity=8,
+    )
+    baker.make(
+        "transactionManagerProcessor.Transaction",
+        _quantity=250,
+        customer_id=customer_id_a,
+        product_id=product_id_b,
+        currency=Currency.PLN,
+        timestamp=dt_gen,
+        amount=12.50,
+        quantity=8,
+    )
+    baker.make(
+        "transactionManagerProcessor.Transaction",
+        _quantity=250,
+        customer_id=customer_id_b,
+        product_id=product_id_a,
+        currency=Currency.PLN,
+        timestamp=dt_gen,
+        amount=12.50,
+        quantity=8,
+    )
+    baker.make(
+        "transactionManagerProcessor.Transaction",
+        _quantity=250,
+        customer_id=customer_id_b,
+        product_id=product_id_b,
+        currency=Currency.PLN,
+        timestamp=dt_gen,
+        amount=12.50,
+        quantity=8,
+    )
 
 
 @pytest.fixture

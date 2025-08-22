@@ -18,23 +18,12 @@ transation_data_ok = {
     "quantity": 5,
 }
 
-transation_data_zero_amount = transation_data_ok.copy()
-transation_data_zero_amount.update({"amount": 0})
-
-transation_data_minimal_amount = transation_data_ok.copy()
-transation_data_minimal_amount.update({"amount": 00.01})
-
-transation_data_negative_amount = transation_data_ok.copy()
-transation_data_negative_amount.update({"amount": -3})
-
-transation_data_zero_quantity = transation_data_ok.copy()
-transation_data_zero_quantity.update({"quantity": 0})
-
-transation_data_minimal_quantity = transation_data_ok.copy()
-transation_data_minimal_quantity.update({"quantity": 1})
-
-transation_data_negative_quantity = transation_data_ok.copy()
-transation_data_negative_quantity.update({"quantity": -5})
+transation_data_zero_amount = {**transation_data_ok, **{"amount": 0}}
+transation_data_minimal_amount = {**transation_data_ok, **{"amount": 00.01}}
+transation_data_negative_amount = {**transation_data_ok, **{"amount": -3}}
+transation_data_zero_quantity = {**transation_data_ok, **{"quantity": 0}}
+transation_data_minimal_quantity = {**transation_data_ok, **{"quantity": 1}}
+transation_data_negative_quantity = {**transation_data_ok, **{"quantity": -5}}
 
 
 testdata = [
@@ -65,8 +54,5 @@ testdata_ids = [
 )
 def test_transaction_serializer_is_valid(transation_data, expectation):
     with expectation:
-        try:
-            serializer = TransactionSerializer(data=transation_data)
-            serializer.is_valid(raise_exception=True)
-        except Exception as e:
-            raise e
+        serializer = TransactionSerializer(data=transation_data)
+        serializer.is_valid(raise_exception=True)

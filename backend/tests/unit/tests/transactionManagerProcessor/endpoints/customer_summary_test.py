@@ -10,7 +10,7 @@ pytestmark = pytest.mark.django_db(transaction=True)
 class TestReports_CustomerSummary:
     def test_customer_summary(
         self,
-        many_transactions_1k,
+        create_1000_transactions,
         customer_id_a: UUID,
         client: Client,
     ):
