@@ -21,7 +21,7 @@ def _get_csv_processing_statuses():
 
 
 class Transaction(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    id = models.UUIDField(primary_key=True)
     timestamp = NaiveDateTimeField()
     amount = models.DecimalField(
         max_digits=10,
