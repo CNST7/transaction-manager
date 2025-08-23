@@ -11,9 +11,6 @@ repos:
     - id: check-toml
     - id: check-yaml
     - id: debug-statements
-    - id: end-of-file-fixer
-    - id: name-tests-test
-      args: [--pytest]
 - repo: local
   hooks:
     - id: format
