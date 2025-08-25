@@ -19,8 +19,10 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
+from transactionManagerCore.api_root import api_root
 
 urlpatterns = [
+    path("", api_root, name="api-root"),
     path("admin/", admin.site.urls),
     path("", include("transactionManagerProcessor.urls")),
     path("", include("transactionManagerCore.urls")),

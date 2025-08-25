@@ -3,12 +3,12 @@ from rest_framework.routers import DefaultRouter
 
 from transactionManagerProcessor import endpoints
 
+reports_resource_name = "reports"
 transactions_resource_name = "transactions"
 transactions_router = DefaultRouter(trailing_slash=False)
 transactions_router.register(
     transactions_resource_name, endpoints.TransactionViewSet, basename="transaction"
 )
-reports_resource_name = "reports"
 
 
 urlpatterns = [
