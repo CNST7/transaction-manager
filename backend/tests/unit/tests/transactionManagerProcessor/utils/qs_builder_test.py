@@ -24,8 +24,8 @@ class TestQSBuilder:
 
         excepted_transactions = Transaction.objects.filter(customer_id=customer_id_a)
 
-        assert set(transactions.values_list("id", flat=True)) == set(
-            excepted_transactions.values_list("id", flat=True)
+        assert set(transactions.values_list("transaction_id", flat=True)) == set(
+            excepted_transactions.values_list("transaction_id", flat=True)
         )
 
     def test_qs_builder_date_from(
@@ -40,11 +40,11 @@ class TestQSBuilder:
         )
 
         excepted_transactions = Transaction.objects.filter(
-            id=UUID("d0466264-1384-4dc0-82d0-39e541b5c121")
+            transaction_id=UUID("d0466264-1384-4dc0-82d0-39e541b5c121")
         )
 
-        assert set(transactions.values_list("id", flat=True)) == set(
-            excepted_transactions.values_list("id", flat=True)
+        assert set(transactions.values_list("transaction_id", flat=True)) == set(
+            excepted_transactions.values_list("transaction_id", flat=True)
         )
 
     def test_qs_builder_date_to(
@@ -59,11 +59,11 @@ class TestQSBuilder:
         )
 
         excepted_transactions = Transaction.objects.filter(
-            id=UUID("d2993a99-3358-41af-8047-070fa648d079")
+            transaction_id=UUID("d2993a99-3358-41af-8047-070fa648d079")
         )
 
-        assert set(transactions.values_list("id", flat=True)) == set(
-            excepted_transactions.values_list("id", flat=True)
+        assert set(transactions.values_list("transaction_id", flat=True)) == set(
+            excepted_transactions.values_list("transaction_id", flat=True)
         )
 
     def test_qs_builder_date_range(
@@ -79,11 +79,11 @@ class TestQSBuilder:
         )
 
         excepted_transactions = Transaction.objects.filter(
-            id=UUID("ddaf9b82-1bf5-44b5-89ff-45816857403b")
+            transaction_id=UUID("ddaf9b82-1bf5-44b5-89ff-45816857403b")
         )
 
-        assert set(transactions.values_list("id", flat=True)) == set(
-            excepted_transactions.values_list("id", flat=True)
+        assert set(transactions.values_list("transaction_id", flat=True)) == set(
+            excepted_transactions.values_list("transaction_id", flat=True)
         )
 
     def test_qs_builder_multiple_dates(
@@ -98,11 +98,11 @@ class TestQSBuilder:
         )
 
         excepted_transactions = Transaction.objects.filter(
-            id=UUID("d0466264-1384-4dc0-82d0-39e541b5c121")
+            transaction_id=UUID("d0466264-1384-4dc0-82d0-39e541b5c121")
         )
 
-        assert set(transactions.values_list("id", flat=True)) == set(
-            excepted_transactions.values_list("id", flat=True)
+        assert set(transactions.values_list("transaction_id", flat=True)) == set(
+            excepted_transactions.values_list("transaction_id", flat=True)
         )
 
     def test_qs_builder_inapropriate_date_format(
@@ -142,6 +142,6 @@ class TestQSBuilder:
 
         excepted_transactions = Transaction.objects.filter(customer_id=customer_id_a)
 
-        assert set(transactions.values_list("id", flat=True)) == set(
-            excepted_transactions.values_list("id", flat=True)
+        assert set(transactions.values_list("transaction_id", flat=True)) == set(
+            excepted_transactions.values_list("transaction_id", flat=True)
         )

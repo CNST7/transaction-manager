@@ -9,7 +9,7 @@ pytestmark = pytest.mark.django_db(transaction=True)
 
 def test_transaction():
     transaction = Transaction(
-        id=UUID("d0466264-1384-4dc0-82d0-39e541b5c121"),
+        transaction_id=UUID("d0466264-1384-4dc0-82d0-39e541b5c121"),
         timestamp="2025-07-02 20:48:45.336874",
         amount="25.30",
         currency=Currency.PLN,

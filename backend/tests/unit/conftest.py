@@ -51,7 +51,7 @@ def few_transactions(
 ) -> list[Transaction]:
     return [
         Transaction.objects.create(
-            id=UUID("d2993a99-3358-41af-8047-070fa648d079"),
+            transaction_id=UUID("d2993a99-3358-41af-8047-070fa648d079"),
             timestamp="2025-07-02 20:48:45.336874",
             amount=10.00,
             currency=Currency.PLN,
@@ -60,7 +60,7 @@ def few_transactions(
             quantity=10,
         ),
         Transaction.objects.create(
-            id=UUID("ddaf9b82-1bf5-44b5-89ff-45816857403b"),
+            transaction_id=UUID("ddaf9b82-1bf5-44b5-89ff-45816857403b"),
             timestamp="2025-07-25 20:48:45.336874",
             amount=20.50,
             currency=Currency.PLN,
@@ -69,7 +69,7 @@ def few_transactions(
             quantity=1,
         ),
         Transaction.objects.create(
-            id=UUID("d0466264-1384-4dc0-82d0-39e541b5c121"),
+            transaction_id=UUID("d0466264-1384-4dc0-82d0-39e541b5c121"),
             timestamp="2025-08-02 20:48:45.336874",
             amount=25.30,
             currency=Currency.PLN,
@@ -169,7 +169,7 @@ def transaction_csv() -> TransactionCSV:
 
 @pytest.fixture
 def csv_file() -> SimpleUploadedFile:
-    csv_content = b"id,timestamp,amount,currency,customer_id,product_id,quantity\nd0466264-1384-4dc0-82d0-39e541b5c121,2025-07-02 20:48:45.336874,25.30,PLN,14245004-9354-4b77-8744-19e36372f4cd,0e64a915-9711-47f3-a640-be6f517546b1,5\nd1466264-1384-4dc0-82d0-39e541b5c121,2025-07-02 20:48:45.336874,25.30,CAD,14245004-9354-4b77-8744-19e36372f4cd,0e64a915-9711-47f3-a640-be6f517546b1,5"
+    csv_content = b"transaction_id,timestamp,amount,currency,customer_id,product_id,quantity\nd0466264-1384-4dc0-82d0-39e541b5c121,2025-07-02 20:48:45.336874,25.30,PLN,14245004-9354-4b77-8744-19e36372f4cd,0e64a915-9711-47f3-a640-be6f517546b1,5\nd1466264-1384-4dc0-82d0-39e541b5c121,2025-07-02 20:48:45.336874,25.30,CAD,14245004-9354-4b77-8744-19e36372f4cd,0e64a915-9711-47f3-a640-be6f517546b1,5"
     filename = "test.csv"
 
     csv_file = SimpleUploadedFile(

@@ -47,7 +47,7 @@ def prepare_customer_summary(
         except KeyError:
             return Response(
                 {
-                    "error": f"Generating customer summary failed. {transaction.id=} unknow currency {transaction.currency=}"
+                    "error": f"Generating customer summary failed. {transaction.transaction_id=} unknow currency {transaction.currency=}"
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )

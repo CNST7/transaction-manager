@@ -7,7 +7,7 @@ from rest_framework.serializers import ValidationError
 from transactionManagerProcessor.enums import Currency
 
 transaction_data_ok = {
-    "id": UUID("d0466264-1384-4dc0-82d0-39e541b5c121"),
+    "transaction_id": UUID("d0466264-1384-4dc0-82d0-39e541b5c121"),
     "timestamp": "2025-07-02 20:48:45.336874",
     "amount": Decimal("25.30"),
     "currency": Currency.PLN,
@@ -16,9 +16,12 @@ transaction_data_ok = {
     "quantity": 5,
 }
 
-transaction_data_incorrect_id = {**transaction_data_ok, **{"id": "asdf"}}
-transaction_data_missing_product_id = {**transaction_data_ok}
-del transaction_data_missing_product_id["id"]
+transaction_data_incorrect_transaction_id = {
+    **transaction_data_ok,
+    **{"transaction_id": "asdf"},
+}
+transaction_data_missing_transaction_id = {**transaction_data_ok}
+del transaction_data_missing_transaction_id["transaction_id"]
 
 transaction_data_incorrect_timestamp = {
     **transaction_data_ok,
@@ -47,13 +50,19 @@ transaction_data_incorrect_currency = {**transaction_data_ok, **{"currency": "AA
 transaction_data_missing_currency = {**transaction_data_ok}
 del transaction_data_missing_currency["currency"]
 
-transaction_data_incorrect_customer_id = {**transaction_data_ok, **{"id": "asdf"}}
+transaction_data_incorrect_customer_id = {
+    **transaction_data_ok,
+    **{"customer_id": "asdf"},
+}
 transaction_data_missing_customer_id = {**transaction_data_ok}
-del transaction_data_missing_customer_id["id"]
+del transaction_data_missing_customer_id["customer_id"]
 
-transaction_data_incorrect_product_id = {**transaction_data_ok, **{"id": "asdf"}}
+transaction_data_incorrect_product_id = {
+    **transaction_data_ok,
+    **{"product_id": "asdf"},
+}
 transaction_data_missing_product_id = {**transaction_data_ok}
-del transaction_data_missing_product_id["id"]
+del transaction_data_missing_product_id["product_id"]
 
 transaction_data_zero_quantity = {**transaction_data_ok, **{"quantity": 0}}
 transaction_data_minimal_quantity = {**transaction_data_ok, **{"quantity": 1}}
@@ -73,11 +82,11 @@ test_cases = {
         transaction_data_ok,
         does_not_raise(),
     ),
-    "transaction_data_incorrect_id": (
-        transaction_data_incorrect_id,
+    "transaction_data_incorrect_transaction_id": (
+        transaction_data_incorrect_transaction_id,
         pytest.raises(ValidationError),
     ),
-    "transaction_data_missing_id": (
+    "transaction_data_missing_transaction_id": (
         transaction_data_missing_product_id,
         pytest.raises(ValidationError),
     ),

@@ -91,7 +91,7 @@ def _assert_transaction_correctly_processed():
     assert response.status_code == 200
     transaction_data = response.json()
     assert transaction_data == {
-        "id": "d0466264-1384-4dc0-82d0-39e541b5c121",
+        "transaction_id": "d0466264-1384-4dc0-82d0-39e541b5c121",
         "timestamp": "2025-07-02T20:48:45.336874Z",
         "amount": "25.30",
         "currency": "PLN",

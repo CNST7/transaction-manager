@@ -35,7 +35,9 @@ class Test_ProcessTransactionsCSV:
     ):
         process_transaction_csv(transaction_csv.id)
 
-        transaction = Transaction.objects.get(id="d0466264-1384-4dc0-82d0-39e541b5c121")
+        transaction = Transaction.objects.get(
+            transaction_id="d0466264-1384-4dc0-82d0-39e541b5c121"
+        )
         assert transaction.timestamp == datetime.fromisoformat(
             "2025-07-02 20:48:45.336874"
         )

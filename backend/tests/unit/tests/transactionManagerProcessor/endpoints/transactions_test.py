@@ -56,7 +56,7 @@ class TestTransations_List:
         assert response.status_code == status.HTTP_200_OK
 
         transaction_fields = (
-            "id",
+            "transaction_id",
             "timestamp",
             "amount",
             "currency",
@@ -130,7 +130,7 @@ class TestTransations_Retrieve:
         few_transactions: list[Transaction],
         client: Client,
     ):
-        url = reverse("transaction-detail", args=[few_transactions[0].id])
+        url = reverse("transaction-detail", args=[few_transactions[0].transaction_id])
         response = client.get(
             url,
             format="json",
@@ -139,7 +139,7 @@ class TestTransations_Retrieve:
 
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == {
-            "id": "d2993a99-3358-41af-8047-070fa648d079",
+            "transaction_id": "d2993a99-3358-41af-8047-070fa648d079",
             "timestamp": "2025-07-02T20:48:45.336874Z",
             "amount": "10.00",
             "currency": "PLN",
