@@ -1,9 +1,9 @@
 .*
 
 db.sqlite3
-**/media/**
-**/logs/**
-**/static/**
+media
+logs
+static
 
 !.gitignore
 !.dockerignore
