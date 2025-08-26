@@ -15,6 +15,8 @@ RUN pip install --upgrade pip
 RUN pip install -r /backend/requirements.txt --no-cache-dir
 
 COPY --chown=backend:backend ./transactionManager /backend/transactionManager/
+RUN mkdir -p logs static media
+RUN chown -R backend:backend logs static media
 USER backend
 
 CMD ["./entrypoint.sh"]

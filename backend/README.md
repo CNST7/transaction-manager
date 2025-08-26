@@ -21,19 +21,25 @@
    export PYTHONPATH=$PYTHONPATH:$(pwd)/backend/transactionManager
    ```
 
-4. **Apply migrations**
+4. **Create logs directory**
+
+   ```sh
+   mkdir -p backend/transactionManager/logs
+   ```
+
+5. **Apply migrations**
 
    ```sh
    python backend/transactionManager/manage.py migrate --settings=transactionManager.settings_dev
    ```
 
-5. **Collect static files**
+6. **Collect static files**
 
    ```sh
    python backend/transactionManager/manage.py collectstatic --settings=transactionManager.settings_dev --clear
    ```
 
-6. **Run development server**
+7. **Run development server**
 
    ```sh
    python backend/transactionManager/manage.py runserver --settings=transactionManager.settings_dev

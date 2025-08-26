@@ -1,11 +1,10 @@
 .*
 
 db.sqlite3
-**/csv_transactions_files/**
+**/media/**
 **/logs/**
 **/static/**
 
 !.gitignore
 !.dockerignore
 !.env
-!.gitkeep
