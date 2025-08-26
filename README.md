@@ -19,7 +19,7 @@ System allows for importing, validating, processing and sharing transaction data
    - **[GET]** _/reports/customer-summary/{customer_id}_
    - **[GET]** _/reports/product-summary/{product_id}_
 
-     | Both endpoints accept the optional query parameters `date_from` and `date_to`, which must be in `YYYY-MM-DD` format.
+     | Both endpoints accept the optional query parameters `date_from` and `date_to` in `YYYY-MM-DD` format.
 
 ## ⚙️ Technology stack
 
