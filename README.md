@@ -1,5 +1,26 @@
 # Transaction Manager
 
+## 📊 Transaction processing and aggregation system
+
+System allows for importing, validating, processing and sharing transaction data.
+
+1. Import data
+
+   - **[POST]** _/transactions/upload_
+   - [sample CSV](backend/tests/integration/fixtures/test.csv)
+
+2. Read data
+
+   - **[GET]** _/transactions_
+   - **[GET]** _/transactions/{transaction_id}_
+
+3. Aggregate data
+
+   - **[GET]** _/reports/customer-summary/{customer_id}_
+   - **[GET]** _/reports/product-summary/{product_id}_
+
+     | Both endpoints accept the optional query parameters `date_from` and `date_to`, which must be in `YYYY-MM-DD` format.
+
 ## ⚙️ Technology stack
 
 - 🐍 [Python](https://www.python.org/)
@@ -16,11 +37,7 @@
 
 ## 🚀 Start project
 
-To start project run following command:
-
-`docker compose up --build`
-
-then visit [localhost](http://localhost/)
+To start project run `docker compose up -d --build` and visit [localhost](http://localhost/)
 
 ## 💻 Backend Development
 
