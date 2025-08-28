@@ -145,3 +145,34 @@ class TestQSBuilder:
         assert set(transactions.values_list("transaction_id", flat=True)) == set(
             excepted_transactions.values_list("transaction_id", flat=True)
         )
+
+    def test_qs_builder_date_from_cannot_be_after_date_to(
+        self,
+        qs_builder_transactions: list[Transaction],
+        customer_id_a: UUID,
+    ):
+        with pytest.raises(ValidationError) as error:
+            _ = build_qs(
+                filter_key="customer_id",
+                id=str(customer_id_a),
+                date_from="2025-08-02",
+                date_to="2025-08-01",
+            )
+
+        assert error.match("`date_from` cannot occur after `date_to`")
+
+    def test_qs_builder_date_from_equals_date_to(
+        self,
+        qs_builder_transactions: list[Transaction],
+        customer_id_a: UUID,
+    ):
+        qs = build_qs(
+            filter_key="customer_id",
+            id=str(customer_id_a),
+            date_from="2025-08-02",
+            date_to="2025-08-02",
+        )
+
+        assert [tr.transaction_id for tr in qs] == [
+            UUID("d0466264-1384-4dc0-82d0-39e541b5c121")
+        ]

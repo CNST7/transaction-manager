@@ -41,6 +41,17 @@ class QueryParamsSerializer(serializers.Serializer):
     date_from = serializers.DateField(required=False, allow_null=True)
     date_to = serializers.DateField(required=False, allow_null=True)
 
+    def validate(self, data):
+        if (
+            data["date_from"]
+            and data["date_to"]
+            and data["date_from"] > data["date_to"]
+        ):
+            raise serializers.ValidationError(
+                "`date_from` cannot occur after `date_to`"
+            )
+        return data
+
 
 class IDSerializer(serializers.Serializer):
     id = serializers.UUIDField(required=True)
