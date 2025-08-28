@@ -61,6 +61,7 @@ def prepare_product_summary(
         total_amount=total_amount,
         unique_customers=len(unique_customers),
     )
+
     return product_summary.model_dump(mode="json")
 
 

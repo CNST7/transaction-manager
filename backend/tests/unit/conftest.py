@@ -36,6 +36,11 @@ def product_id_b(scope="session") -> UUID:
 
 
 @pytest.fixture
+def product_id_c(scope="session") -> UUID:
+    return UUID("fe350cba-4f9c-4b98-8bda-2bda7c7f310c")
+
+
+@pytest.fixture
 def customer_id_a(scope="session") -> UUID:
     return UUID("51f53702-b492-47be-b20d-80b6852368dd")
 
@@ -46,7 +51,12 @@ def customer_id_b(scope="session") -> UUID:
 
 
 @pytest.fixture
-def few_transactions(
+def customer_id_c(scope="session") -> UUID:
+    return UUID("2a6efd2d-702e-41d7-b303-8bca7c87617c")
+
+
+@pytest.fixture
+def qs_builder_transactions(
     customer_id_a: UUID, product_id_a: UUID, scope="session"
 ) -> list[Transaction]:
     return [
@@ -77,6 +87,110 @@ def few_transactions(
             product_id=product_id_a,
             quantity=5,
         ),
+    ]
+
+
+@pytest.fixture
+def customer_summary_transactions(
+    customer_id_a: UUID,
+    customer_id_b: UUID,
+    product_id_a: UUID,
+    product_id_b: UUID,
+    product_id_c: UUID,
+    scope="session",
+) -> list[Transaction]:
+    base_transaction_data = {
+        "amount": 10.00,
+        "customer_id": customer_id_a,
+        "product_id": product_id_a,
+        "quantity": 10,
+    }
+
+    test_case_transaction_data = [
+        {
+            **base_transaction_data,
+            "transaction_id": UUID("1fb17aed-9480-420e-aeb2-6908462ac7c0"),
+            "currency": Currency.PLN,
+            "timestamp": "2025-08-01 10:00:00.000000",
+        },
+        {
+            **base_transaction_data,
+            "transaction_id": UUID("f895f44a-73f7-45dc-b84a-561d57d6a1df"),
+            "currency": Currency.EUR,
+            "timestamp": "2025-08-02 10:00:00.000000",
+        },
+        {
+            **base_transaction_data,
+            "transaction_id": UUID("4b88b84d-84b2-4d1c-96ec-533b0b691d7d"),
+            "currency": Currency.USD,
+            "timestamp": "2025-08-03 10:00:00.000000",
+            "product_id": product_id_b,
+        },
+        {
+            **base_transaction_data,
+            "transaction_id": UUID("dd171bff-eb14-42d1-aee5-d44fdf1277dd"),
+            "currency": Currency.USD,
+            "timestamp": "2025-08-04 10:00:00.000000",
+            "customer_id": customer_id_b,
+            "product_id": product_id_c,
+        },
+    ]
+
+    return [
+        Transaction.objects.create(**transaction)
+        for transaction in test_case_transaction_data
+    ]
+
+
+@pytest.fixture
+def product_summary_transactions(
+    customer_id_a: UUID,
+    customer_id_b: UUID,
+    customer_id_c: UUID,
+    product_id_a: UUID,
+    product_id_b: UUID,
+    scope="session",
+) -> list[Transaction]:
+    base_transaction_data = {
+        "amount": 10.00,
+        "customer_id": customer_id_a,
+        "product_id": product_id_a,
+        "quantity": 10,
+    }
+
+    test_case_transaction_data = [
+        {
+            **base_transaction_data,
+            "transaction_id": UUID("9a78f23c-b7e1-495c-8f01-47a4e669959b"),
+            "currency": Currency.PLN,
+            "timestamp": "2025-08-01 10:00:00.000000",
+        },
+        {
+            **base_transaction_data,
+            "transaction_id": UUID("bfe4cf74-6128-42cc-b819-2bcbbb4942ed"),
+            "currency": Currency.EUR,
+            "timestamp": "2025-08-02 10:00:00.000000",
+        },
+        {
+            **base_transaction_data,
+            "transaction_id": UUID("94503da6-0fd7-4eb1-9bd1-40be6384c2b8"),
+            "currency": Currency.USD,
+            "timestamp": "2025-08-03 10:00:00.000000",
+            "customer_id": customer_id_b,
+        },
+        {
+            **base_transaction_data,
+            "transaction_id": UUID("7c813364-a746-4609-960e-c112afb5448f"),
+            "currency": Currency.USD,
+            "timestamp": "2025-08-04 10:00:00.000000",
+            "product_id": product_id_b,
+            "customer_id": customer_id_c,
+        },
+    ]
+
+    return [
+        Transaction.objects.create(**transaction)
+        for transaction in test_case_transaction_data
     ]
 
 

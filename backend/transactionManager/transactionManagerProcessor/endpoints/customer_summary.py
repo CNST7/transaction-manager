@@ -5,7 +5,7 @@ from functools import partial
 from typing import Annotated
 
 from django.db.models.query import QuerySet
-from pydantic import BaseModel, Field, NonNegativeInt
+from pydantic import BaseModel, Field, NonNegativeInt, field_serializer
 from rest_framework import status
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -28,6 +28,10 @@ class CustomerSummaryOut(BaseModel):
     total_amount: Annotated[Decimal, Field(ge=0, max_digits=20, decimal_places=2)]
     unique_products: NonNegativeInt
     last_transaction: datetime | None
+
+    @field_serializer("last_transaction")
+    def serialize_created_at(self, value: datetime, _info):
+        return value.strftime("%Y-%m-%d %H:%M:%S")
 
 
 def prepare_customer_summary(
@@ -65,6 +69,7 @@ def prepare_customer_summary(
         last_transaction=last_transaction,
         unique_products=len(unique_products),
     )
+
     return customer_summary.model_dump(mode="json")
 
 

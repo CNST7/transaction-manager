@@ -10,7 +10,7 @@ pytestmark = pytest.mark.django_db(transaction=True)
 class TestReports_CustomerSummary:
     def test_customer_summary(
         self,
-        create_1000_transactions,
+        customer_summary_transactions,
         customer_id_a: UUID,
         client: Client,
     ):
@@ -23,7 +23,7 @@ class TestReports_CustomerSummary:
 
         assert response.status_code == 200
         assert response.json() == {
-            "total_amount": "81500.00",
+            "total_amount": "930.00",
             "unique_products": 2,
-            "last_transaction": "2025-07-03T16:27:02.593273",
+            "last_transaction": "2025-08-03 10:00:00",
         }

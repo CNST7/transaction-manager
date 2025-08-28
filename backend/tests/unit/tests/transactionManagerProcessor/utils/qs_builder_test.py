@@ -14,7 +14,7 @@ pytestmark = pytest.mark.django_db(transaction=True)
 class TestQSBuilder:
     def test_qs_builder(
         self,
-        few_transactions: list[Transaction],
+        qs_builder_transactions: list[Transaction],
         customer_id_a: UUID,
     ):
         transactions = build_qs(
@@ -30,7 +30,7 @@ class TestQSBuilder:
 
     def test_qs_builder_date_from(
         self,
-        few_transactions: list[Transaction],
+        qs_builder_transactions: list[Transaction],
         customer_id_a: UUID,
     ):
         transactions = build_qs(
@@ -49,7 +49,7 @@ class TestQSBuilder:
 
     def test_qs_builder_date_to(
         self,
-        few_transactions: list[Transaction],
+        qs_builder_transactions: list[Transaction],
         customer_id_a: UUID,
     ):
         transactions = build_qs(
@@ -68,7 +68,7 @@ class TestQSBuilder:
 
     def test_qs_builder_date_range(
         self,
-        few_transactions: list[Transaction],
+        qs_builder_transactions: list[Transaction],
         customer_id_a: UUID,
     ):
         transactions = build_qs(
@@ -88,7 +88,7 @@ class TestQSBuilder:
 
     def test_qs_builder_multiple_dates(
         self,
-        few_transactions: list[Transaction],
+        qs_builder_transactions: list[Transaction],
         customer_id_a: UUID,
     ):
         transactions = build_qs(
@@ -107,7 +107,7 @@ class TestQSBuilder:
 
     def test_qs_builder_inapropriate_date_format(
         self,
-        few_transactions: list[Transaction],
+        qs_builder_transactions: list[Transaction],
         customer_id_a: UUID,
     ):
         with pytest.raises(ValidationError):
@@ -119,7 +119,7 @@ class TestQSBuilder:
 
     def test_qs_builder_incorrect_filter_key(
         self,
-        few_transactions: list[Transaction],
+        qs_builder_transactions: list[Transaction],
         customer_id_a: UUID,
     ):
         with pytest.raises(FieldError):
@@ -130,7 +130,7 @@ class TestQSBuilder:
 
     def test_qs_builder_ignores_additional_query_params(
         self,
-        few_transactions: list[Transaction],
+        qs_builder_transactions: list[Transaction],
         customer_id_a: UUID,
     ):
         transactions = build_qs(

@@ -127,10 +127,20 @@ class TestTransations_List:
 class TestTransations_Retrieve:
     def test_transations_details(
         self,
-        few_transactions: list[Transaction],
         client: Client,
     ):
-        url = reverse("transaction-detail", args=[few_transactions[0].transaction_id])
+        transaction_data = {
+            "transaction_id": "d2993a99-3358-41af-8047-070fa648d079",
+            "timestamp": "2025-07-02T20:48:45.336874",
+            "amount": "10.00",
+            "currency": "PLN",
+            "customer_id": "51f53702-b492-47be-b20d-80b6852368dd",
+            "product_id": "985e4402-5d1e-404b-8254-968070a3c7c7",
+            "quantity": 10,
+        }
+        Transaction.objects.create(**transaction_data)
+
+        url = reverse("transaction-detail", args=[transaction_data["transaction_id"]])
         response = client.get(
             url,
             format="json",
@@ -138,15 +148,11 @@ class TestTransations_Retrieve:
         )
 
         assert response.status_code == status.HTTP_200_OK
-        assert response.json() == {
-            "transaction_id": "d2993a99-3358-41af-8047-070fa648d079",
+        expected_data = {
+            **transaction_data,
             "timestamp": "2025-07-02T20:48:45.336874Z",
-            "amount": "10.00",
-            "currency": "PLN",
-            "customer_id": "51f53702-b492-47be-b20d-80b6852368dd",
-            "product_id": "985e4402-5d1e-404b-8254-968070a3c7c7",
-            "quantity": 10,
         }
+        assert response.json() == expected_data
 
 
 class TestTransations_ProcessingStatus:
