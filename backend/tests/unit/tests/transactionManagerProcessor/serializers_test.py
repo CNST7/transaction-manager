@@ -1,7 +1,7 @@
 import pytest
 from transactionManagerProcessor.serializers import TransactionSerializer
 
-from backend.tests.unit.fixtures.serializers.transactions_testdata import (
+from backend.tests.unit.fixtures.transactions_testdata import (
     test_data,
     test_names,
 )

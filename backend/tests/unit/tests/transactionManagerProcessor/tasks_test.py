@@ -39,7 +39,7 @@ class Test_ProcessTransactionsCSV:
             transaction_id="d0466264-1384-4dc0-82d0-39e541b5c121"
         )
         assert transaction.timestamp == datetime.fromisoformat(
-            "2025-07-02 20:48:45.336874"
+            "2025-07-02 20:48:45.336874+00:00"
         )
         assert transaction.amount == Decimal("25.30")
         assert transaction.currency == Currency.PLN

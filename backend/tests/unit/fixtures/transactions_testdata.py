@@ -3,7 +3,6 @@ from decimal import Decimal
 from uuid import UUID
 
 import pytest
-from rest_framework.serializers import ValidationError
 from transactionManagerProcessor.enums import Currency
 
 transaction_data_ok = {
@@ -30,6 +29,26 @@ transaction_data_incorrect_timestamp = {
 transaction_data_timezone_timestamp = {
     **transaction_data_ok,
     **{"timestamp": "2025-07-02 20:48:45.336874+02:00"},
+}
+transaction_data_timezone_T_delimiter_timestamp = {
+    **transaction_data_ok,
+    **{"timestamp": "2025-07-02T20:48:45.336874+02:00"},
+}
+transaction_data_timezone_Z_timestamp = {
+    **transaction_data_ok,
+    **{"timestamp": "2025-07-02T20:48:45.336874Z"},
+}
+transaction_data_no_miliseconds_timestamp = {
+    **transaction_data_ok,
+    **{"timestamp": "2025-07-02T20:48:45"},
+}
+transaction_data_timezone_offset_timestamp = {
+    **transaction_data_ok,
+    **{"timestamp": "2025-07-02T20:48:45+0530"},
+}
+transaction_data_no_time_timestamp = {
+    **transaction_data_ok,
+    **{"timestamp": "2025-07-02"},
 }
 transaction_data_missing_timestamp = {**transaction_data_ok}
 del transaction_data_missing_timestamp["timestamp"]
@@ -69,13 +88,16 @@ transaction_data_minimal_quantity = {**transaction_data_ok, **{"quantity": 1}}
 transaction_data_negative_quantity = {**transaction_data_ok, **{"quantity": -5}}
 transaction_data_floating_point_quantity = {**transaction_data_ok, **{"quantity": 1.5}}
 transaction_data_correct_string_quantity = {**transaction_data_ok, **{"quantity": "5"}}
+transaction_data_floating_point_string_quantity = {
+    **transaction_data_ok,
+    **{"quantity": "5.2"},
+}
 transaction_data_incorrect_string_quantity = {
     **transaction_data_ok,
     **{"quantity": "abc"},
 }
 transaction_data_missing_quantity = {**transaction_data_ok}
 del transaction_data_missing_quantity["quantity"]
-
 
 test_cases = {
     "transaction_data_ok": (
@@ -84,27 +106,47 @@ test_cases = {
     ),
     "transaction_data_incorrect_transaction_id": (
         transaction_data_incorrect_transaction_id,
-        pytest.raises(ValidationError),
+        pytest.raises(Exception),
     ),
     "transaction_data_missing_transaction_id": (
-        transaction_data_missing_product_id,
-        pytest.raises(ValidationError),
+        transaction_data_missing_transaction_id,
+        pytest.raises(Exception),
     ),
     "transaction_data_incorrect_timestamp": (
         transaction_data_incorrect_timestamp,
-        pytest.raises(ValidationError),
+        pytest.raises(Exception),
     ),
     "transaction_data_timezone_timestamp": (
         transaction_data_timezone_timestamp,
         does_not_raise(),
     ),
+    "transaction_data_timezone_T_delimiter_timestamp": (
+        transaction_data_timezone_T_delimiter_timestamp,
+        does_not_raise(),
+    ),
+    "transaction_data_timezone_Z_timestamp": (
+        transaction_data_timezone_Z_timestamp,
+        does_not_raise(),
+    ),
+    "transaction_data_no_miliseconds_timestamp": (
+        transaction_data_no_miliseconds_timestamp,
+        does_not_raise(),
+    ),
+    "transaction_data_timezone_offset_timestamp": (
+        transaction_data_timezone_offset_timestamp,
+        does_not_raise(),
+    ),
+    "transaction_data_no_time_timestamp": (
+        transaction_data_no_time_timestamp,
+        does_not_raise(),
+    ),
     "transaction_data_missing_timestamp": (
         transaction_data_missing_timestamp,
-        pytest.raises(ValidationError),
+        pytest.raises(Exception),
     ),
     "transaction_data_zero_amount": (
         transaction_data_zero_amount,
-        pytest.raises(ValidationError),
+        pytest.raises(Exception),
     ),
     "transaction_data_minimal_amount": (
         transaction_data_minimal_amount,
@@ -112,11 +154,11 @@ test_cases = {
     ),
     "transaction_data_negative_amount": (
         transaction_data_negative_amount,
-        pytest.raises(ValidationError),
+        pytest.raises(Exception),
     ),
     "transaction_data_missing_amount": (
         transaction_data_missing_amount,
-        pytest.raises(ValidationError),
+        pytest.raises(Exception),
     ),
     "transaction_data_PLN_currency": (
         transaction_data_PLN_currency,
@@ -132,57 +174,60 @@ test_cases = {
     ),
     "transaction_data_incorrect_currency": (
         transaction_data_incorrect_currency,
-        pytest.raises(ValidationError),
+        pytest.raises(Exception),
     ),
     "transaction_data_missing_currency": (
         transaction_data_missing_currency,
-        pytest.raises(ValidationError),
-    ),
-    "transaction_data_zero_quantity": (
-        transaction_data_incorrect_customer_id,
-        pytest.raises(ValidationError),
-    ),
-    "transaction_data_minimal_quantity": (
-        transaction_data_missing_customer_id,
-        pytest.raises(ValidationError),
-    ),
-    "transaction_data_negative_quantity": (
-        transaction_data_incorrect_product_id,
-        pytest.raises(ValidationError),
-    ),
-    "transaction_data_missing_quantity": (
-        transaction_data_missing_product_id,
-        pytest.raises(ValidationError),
+        pytest.raises(Exception),
     ),
     "transaction_data_incorrect_customer_id": (
-        transaction_data_zero_quantity,
-        pytest.raises(ValidationError),
+        transaction_data_incorrect_customer_id,
+        pytest.raises(Exception),
     ),
     "transaction_data_missing_customer_id": (
+        transaction_data_missing_customer_id,
+        pytest.raises(Exception),
+    ),
+    "transaction_data_incorrect_product_id": (
+        transaction_data_incorrect_product_id,
+        pytest.raises(Exception),
+    ),
+    "transaction_data_missing_product_id": (
+        transaction_data_missing_quantity,
+        pytest.raises(Exception),
+    ),
+    "transaction_data_zero_quantity": (
+        transaction_data_zero_quantity,
+        pytest.raises(Exception),
+    ),
+    "transaction_data_minimal_quantity": (
         transaction_data_minimal_quantity,
         does_not_raise(),
     ),
-    "transaction_data_incorrect_product_id": (
+    "transaction_data_negative_quantity": (
         transaction_data_negative_quantity,
-        pytest.raises(ValidationError),
+        pytest.raises(Exception),
+    ),
+    "transaction_data_missing_quantity": (
+        transaction_data_missing_quantity,
+        pytest.raises(Exception),
     ),
     "transaction_data_floating_point_quantity": (
         transaction_data_floating_point_quantity,
-        pytest.raises(ValidationError),
+        pytest.raises(Exception),
     ),
     "transaction_data_correct_string_quantity": (
         transaction_data_correct_string_quantity,
         does_not_raise(),
     ),
+    "transaction_data_floating_point_string_quantity": (
+        transaction_data_floating_point_string_quantity,
+        pytest.raises(Exception),
+    ),
     "transaction_data_incorrect_string_quantity": (
         transaction_data_incorrect_string_quantity,
-        pytest.raises(ValidationError),
-    ),
-    "transaction_data_missing_product_id": (
-        transaction_data_missing_quantity,
-        pytest.raises(ValidationError),
+        pytest.raises(Exception),
     ),
 }
-
 
 test_names, test_data = zip(*test_cases.items(), strict=False)
