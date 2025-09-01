@@ -30,5 +30,8 @@ def api_root(request, format=None):
             # f"{utils_resource_name}/health-check": reverse(
             #     "healthCheck", request=request, format=format
             # ),
+            # f"{utils_resource_name}/error": reverse(
+            #     "error", request=request, format=format
+            # ),
         },
     )

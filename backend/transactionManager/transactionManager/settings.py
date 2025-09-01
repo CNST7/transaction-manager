@@ -141,6 +141,7 @@ STATIC_ROOT = BASE_DIR / "static"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 REST_FRAMEWORK = {
+    "EXCEPTION_HANDLER": "transactionManager.exceptions.handlers.global_exception_handler",
     "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
     # TODO consider cursor based pagination which may be better for larger datasets
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
@@ -187,7 +188,7 @@ LOGGING = {
             "level": "INFO",
             "class": "logging.handlers.RotatingFileHandler",
             "filename": LOG_DIR / "transactionManagerProcessor.log",
-            "maxBytes": 1024 * 1024 * 5,  # 5 MB
+            "maxBytes": 1024 * 1024 * 50,  # 50 MiB
             "backupCount": 5,
             "formatter": "verbose",
         },
@@ -198,15 +199,16 @@ LOGGING = {
         },
     },
     "root": {
-        "handlers": ["console"],
+        "handlers": ["file", "console"],
         "level": "INFO",
     },
     "loggers": {
-        "django": {
-            "handlers": ["console"],
-            "level": "INFO",
-        },
         "transactionManagerProcessor": {
+            "handlers": ["file", "console"],
+            "level": "DEBUG",
+            "propagate": False,
+        },
+        "transactionManager": {
             "handlers": ["file", "console"],
             "level": "DEBUG",
             "propagate": False,

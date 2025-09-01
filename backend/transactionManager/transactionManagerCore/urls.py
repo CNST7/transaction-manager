@@ -10,4 +10,9 @@ urlpatterns = [
         endpoints.HealthCheckEndpoint.as_view(),
         name="healthCheck",
     ),
+    path(
+        f"{utils_resource_name}/error",
+        endpoints.ErrorEndpoint.as_view(),
+        name="error",
+    ),
 ]
