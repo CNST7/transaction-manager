@@ -316,3 +316,69 @@ def csv_file() -> SimpleUploadedFile:
         content_type="multipart/form-data",
     )
     return csv_file
+
+
+@pytest.fixture
+def excessive_fields_csv_file() -> SimpleUploadedFile:
+    csv_content = b"transaction_id,timestamp,amount,currency,customer_id,product_id,quantity,excessive_field\nd0466264-1384-4dc0-82d0-39e541b5c121,2025-07-02 20:48:45.336874,25.30,PLN,14245004-9354-4b77-8744-19e36372f4cd,0e64a915-9711-47f3-a640-be6f517546b1,5\nd1466264-1384-4dc0-82d0-39e541b5c121,2025-07-02 20:48:45.336874,25.30,CAD,14245004-9354-4b77-8744-19e36372f4cd,0e64a915-9711-47f3-a640-be6f517546b1,5,excessive_value"
+    filename = "test.csv"
+
+    csv_file = SimpleUploadedFile(
+        filename,
+        csv_content,
+        content_type="multipart/form-data",
+    )
+    return csv_file
+
+
+@pytest.fixture
+def corrupted_csv_file() -> SimpleUploadedFile:
+    csv_content = b"\xff\xfe\x00\x00garbage"
+    # csv_content = b"\x89PNG\r\n\x1a\n...binary image..."
+    filename = "test.csv"
+
+    corrupted_csv_file = SimpleUploadedFile(
+        filename,
+        csv_content,
+        content_type="multipart/form-data",
+    )
+    return corrupted_csv_file
+
+
+@pytest.fixture
+def missing_headers_csv_file() -> SimpleUploadedFile:
+    csv_content = b"timestamp,amount,customer_id,product_id,quantity\nd0466264-1384-4dc0-82d0-39e541b5c121,2025-07-02 20:48:45.336874,25.30,PLN,14245004-9354-4b77-8744-19e36372f4cd,0e64a915-9711-47f3-a640-be6f517546b1,5\nd1466264-1384-4dc0-82d0-39e541b5c121,2025-07-02 20:48:45.336874,25.30,CAD,14245004-9354-4b77-8744-19e36372f4cd,0e64a915-9711-47f3-a640-be6f517546b1,5"
+    filename = "test.csv"
+
+    csv_file = SimpleUploadedFile(
+        filename,
+        csv_content,
+        content_type="multipart/form-data",
+    )
+    return csv_file
+
+
+@pytest.fixture
+def empty_csv_file() -> SimpleUploadedFile:
+    csv_content = b""
+    filename = "test.csv"
+
+    corrupted_csv_file = SimpleUploadedFile(
+        filename,
+        csv_content,
+        content_type="multipart/form-data",
+    )
+    return corrupted_csv_file
+
+
+@pytest.fixture
+def txt_file() -> SimpleUploadedFile:
+    txt_content = b""
+    filename = "test.txt"
+
+    csv_file = SimpleUploadedFile(
+        filename,
+        txt_content,
+        content_type="multipart/form-data",
+    )
+    return csv_file

@@ -1,5 +1,8 @@
+import csv
+import io
 import logging
 
+from django.core.files.uploadedfile import UploadedFile
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import mixins, status, viewsets
 from rest_framework.parsers import FormParser, MultiPartParser
@@ -27,25 +30,64 @@ class TransactionUploadEndpoint(APIView):
     parser_classes = (MultiPartParser, FormParser)
 
     def post(self, request: Request):
-        csv_file = request.FILES.get("file")
-        if not csv_file:
-            return Response(
-                {"error": "Missing transactions file"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        file: UploadedFile = request.FILES.get("file")
+        if error_response := _validate_file(file):
+            return error_response
 
-        if not csv_file.name.endswith(".csv"):
-            return Response(
-                {"error": "Not a CSV type"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        transaction_csv = TransactionCSV.objects.create(file=csv_file)
+        transaction_csv = TransactionCSV.objects.create(file=file)
         process_transaction_csv.delay(transaction_csv.id)
 
         return Response(
             {"transaction_csv_id": transaction_csv.id},
             status=status.HTTP_200_OK,
+        )
+
+
+def _validate_file(file: UploadedFile) -> None | Response:
+    if not file:
+        return Response(
+            {"error": "Missing transaction file"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    if not file.name.endswith(".csv"):
+        return Response(
+            {"error": "Not a CSV type"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    if file.size == 0:
+        return Response(
+            {"error": "Empty csv file"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    try:
+        decoded_file = file.read().decode("utf-8")
+    except UnicodeDecodeError:
+        return Response(
+            {"error": "Invalid CSV format"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    reader = csv.DictReader(io.StringIO(decoded_file))
+    csv_headers = set(reader.fieldnames)
+
+    required_csv_headers = {
+        "transaction_id",
+        "timestamp",
+        "amount",
+        "currency",
+        "customer_id",
+        "product_id",
+        "quantity",
+    }
+
+    if csv_headers < required_csv_headers:
+        missing_csv_headers = ", ".join(required_csv_headers - csv_headers)
+        return Response(
+            {"error": f"Missing csv headers: {missing_csv_headers}"},
+            status=status.HTTP_400_BAD_REQUEST,
         )
 
 

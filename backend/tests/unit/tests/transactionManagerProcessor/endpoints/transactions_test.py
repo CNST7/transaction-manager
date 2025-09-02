@@ -1,5 +1,4 @@
 from typing import Any
-from urllib.parse import urlencode
 from uuid import UUID
 
 import pytest
@@ -35,9 +34,122 @@ class TestTransations_Upload:
         assert csv_file_upload_id
         assert csv_file_saved
 
-    def test_transations_upload_corrupted_file(self): ...
-    def test_transations_upload_missing_file(self): ...
-    def test_transations_upload_not_a_csv_file(self): ...
+    def test_transations_upload_ignores_excessive_fields_in_csv_file(
+        self,
+        client: Client,
+        excessive_fields_csv_file: SimpleUploadedFile,
+    ):
+        url = reverse("transactionUpload")
+        response = client.post(
+            url,
+            {"file": excessive_fields_csv_file},
+            format="multipart",
+            headers={
+                "content_disposition": "attachment; filename={filename}",
+            },
+        )
+        content: dict[str, Any] = response.json()
+        csv_file_upload_id = content.get("transaction_csv_id")
+        assert response.status_code == 200
+        csv_file_saved = TransactionCSV.objects.get(id=csv_file_upload_id)
+        assert csv_file_upload_id
+        assert csv_file_saved
+
+    def test_transations_upload_corrupted_csv_file(
+        self,
+        client: Client,
+        corrupted_csv_file: SimpleUploadedFile,
+    ):
+        url = reverse("transactionUpload")
+        response = client.post(
+            url,
+            {"file": corrupted_csv_file},
+            format="multipart",
+            headers={
+                "content_disposition": "attachment; filename={filename}",
+            },
+        )
+        assert response.status_code == 400
+        content: dict[str, Any] = response.json()
+        error_message = content.get("error")
+        assert error_message == "Invalid CSV format"
+
+    def test_transations_upload_missing_headers_csv_file(
+        self,
+        client: Client,
+        missing_headers_csv_file: SimpleUploadedFile,
+    ):
+        url = reverse("transactionUpload")
+        response = client.post(
+            url,
+            {"file": missing_headers_csv_file},
+            format="multipart",
+            headers={
+                "content_disposition": "attachment; filename={filename}",
+            },
+        )
+        assert response.status_code == 400
+        content: dict[str, Any] = response.json()
+        error_message = content.get("error")
+        assert "Missing csv headers" in error_message
+        assert "transaction_id" in error_message
+        assert "currency" in error_message
+
+    def test_transations_upload_empty_csv_file(
+        self,
+        client: Client,
+        empty_csv_file: SimpleUploadedFile,
+    ):
+        url = reverse("transactionUpload")
+        response = client.post(
+            url,
+            {"file": empty_csv_file},
+            format="multipart",
+            headers={
+                "content_disposition": "attachment; filename={filename}",
+            },
+        )
+        assert response.status_code == 400
+        content: dict[str, Any] = response.json()
+        error_message = content.get("error")
+        assert error_message == "Empty csv file"
+
+    def test_transations_upload_missing_file(
+        self,
+        client: Client,
+    ):
+        url = reverse("transactionUpload")
+        response = client.post(
+            url,
+            {"file": ""},
+            format="multipart",
+            headers={
+                "content_disposition": "attachment; filename={filename}",
+            },
+        )
+        assert response.status_code == 400
+        content: dict[str, Any] = response.json()
+        error_message = content.get("error")
+        assert error_message == "Missing transaction file"
+
+    def test_transations_upload_not_a_csv_file(
+        self,
+        client: Client,
+        txt_file: SimpleUploadedFile,
+    ):
+        url = reverse("transactionUpload")
+        response = client.post(
+            url,
+            {"file": txt_file},
+            format="multipart",
+            headers={
+                "content_disposition": "attachment; filename={filename}",
+            },
+        )
+        assert response.status_code == 400
+        content: dict[str, Any] = response.json()
+        error_message = content.get("error")
+        assert error_message == "Not a CSV type"
 
 
 class TestTransations_List:
@@ -80,14 +192,13 @@ class TestTransations_List:
         create_1000_transactions,
         product_id_a: UUID,
     ):
-        base_url = reverse("transaction-list")
-        query_string = urlencode({"product_id": str(product_id_a)})
-        url = f"{base_url}?{query_string}"
+        url = reverse("transaction-list")
 
         response = client.get(
             url,
             format="json",
             content_type="application/json",
+            query_string={"product_id": str(product_id_a)},
         )
 
         assert response.status_code == status.HTTP_200_OK
@@ -105,14 +216,13 @@ class TestTransations_List:
         create_1000_transactions,
         customer_id_a: UUID,
     ):
-        base_url = reverse("transaction-list")
-        query_string = urlencode({"customer_id": str(customer_id_a)})
-        url = f"{base_url}?{query_string}"
+        url = reverse("transaction-list")
 
         response = client.get(
             url,
             format="json",
             content_type="application/json",
+            query_string={"customer_id": str(customer_id_a)},
         )
 
         assert response.status_code == status.HTTP_200_OK
