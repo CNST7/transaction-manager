@@ -40,7 +40,7 @@ class TestQSBuilder:
         )
 
         excepted_transactions = Transaction.objects.filter(
-            transaction_id=UUID("d0466264-1384-4dc0-82d0-39e541b5c121")
+            transaction_id=UUID("b2f4b977-c0de-409c-ae9b-39b806f3f309")
         )
 
         assert set(transactions.values_list("transaction_id", flat=True)) == set(
@@ -59,7 +59,10 @@ class TestQSBuilder:
         )
 
         excepted_transactions = Transaction.objects.filter(
-            transaction_id=UUID("d2993a99-3358-41af-8047-070fa648d079")
+            transaction_id__in=(
+                UUID("d2993a99-3358-41af-8047-070fa648d079"),
+                UUID("f00a9313-4eaf-4e15-9b85-2802a5213764"),
+            )
         )
 
         assert set(transactions.values_list("transaction_id", flat=True)) == set(
@@ -74,12 +77,16 @@ class TestQSBuilder:
         transactions = build_qs(
             filter_key="customer_id",
             id=str(customer_id_a),
-            date_from="2025-07-03",
+            date_from="2025-07-02",
             date_to="2025-08-01",
         )
 
         excepted_transactions = Transaction.objects.filter(
-            transaction_id=UUID("ddaf9b82-1bf5-44b5-89ff-45816857403b")
+            transaction_id__in=(
+                UUID("d2993a99-3358-41af-8047-070fa648d079"),
+                UUID("ddaf9b82-1bf5-44b5-89ff-45816857403b"),
+                UUID("d0466264-1384-4dc0-82d0-39e541b5c121"),
+            )
         )
 
         assert set(transactions.values_list("transaction_id", flat=True)) == set(
@@ -98,7 +105,7 @@ class TestQSBuilder:
         )
 
         excepted_transactions = Transaction.objects.filter(
-            transaction_id=UUID("d0466264-1384-4dc0-82d0-39e541b5c121")
+            transaction_id=UUID("b2f4b977-c0de-409c-ae9b-39b806f3f309")
         )
 
         assert set(transactions.values_list("transaction_id", flat=True)) == set(
@@ -174,5 +181,5 @@ class TestQSBuilder:
         )
 
         assert [tr.transaction_id for tr in qs] == [
-            UUID("d0466264-1384-4dc0-82d0-39e541b5c121")
+            UUID("b2f4b977-c0de-409c-ae9b-39b806f3f309")
         ]

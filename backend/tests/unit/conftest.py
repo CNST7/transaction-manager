@@ -59,10 +59,25 @@ def customer_id_c(scope="session") -> UUID:
 def qs_builder_transactions(
     customer_id_a: UUID, product_id_a: UUID, scope="session"
 ) -> list[Transaction]:
+    date_early = datetime(2025, 7, 2)
+    date_earliest = date_early - timedelta(microseconds=1)
+    date_middle = datetime(2025, 7, 25)
+    date_latest = datetime(2025, 8, 2)
+    date_later = date_latest - timedelta(microseconds=1)
+
     return [
         Transaction.objects.create(
+            transaction_id=UUID("f00a9313-4eaf-4e15-9b85-2802a5213764"),
+            timestamp=date_earliest,
+            amount=10.00,
+            currency=Currency.PLN,
+            customer_id=customer_id_a,
+            product_id=product_id_a,
+            quantity=10,
+        ),
+        Transaction.objects.create(
             transaction_id=UUID("d2993a99-3358-41af-8047-070fa648d079"),
-            timestamp="2025-07-02 20:48:45.336874",
+            timestamp=date_early,
             amount=10.00,
             currency=Currency.PLN,
             customer_id=customer_id_a,
@@ -71,7 +86,7 @@ def qs_builder_transactions(
         ),
         Transaction.objects.create(
             transaction_id=UUID("ddaf9b82-1bf5-44b5-89ff-45816857403b"),
-            timestamp="2025-07-25 20:48:45.336874",
+            timestamp=date_middle,
             amount=20.50,
             currency=Currency.PLN,
             customer_id=customer_id_a,
@@ -80,7 +95,16 @@ def qs_builder_transactions(
         ),
         Transaction.objects.create(
             transaction_id=UUID("d0466264-1384-4dc0-82d0-39e541b5c121"),
-            timestamp="2025-08-02 20:48:45.336874",
+            timestamp=date_later,
+            amount=25.30,
+            currency=Currency.PLN,
+            customer_id=customer_id_a,
+            product_id=product_id_a,
+            quantity=5,
+        ),
+        Transaction.objects.create(
+            transaction_id=UUID("b2f4b977-c0de-409c-ae9b-39b806f3f309"),
+            timestamp=date_latest,
             amount=25.30,
             currency=Currency.PLN,
             customer_id=customer_id_a,
