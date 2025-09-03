@@ -1,5 +1,4 @@
 import logging
-import traceback
 
 from rest_framework import status
 from rest_framework.response import Response
@@ -12,7 +11,7 @@ def global_exception_handler(exc, context: dict) -> Response:
     if response := exception_handler(exc, context):
         return response
 
-    logger.error("UNHANDLED EXCEPTION\n%s", traceback.format_exc())
+    logger.error("UNHANDLED EXCEPTION", exc_info=True)
     set_rollback()
     return Response(
         {"detail": str(exc)},
