@@ -185,7 +185,7 @@ LOGGING = {
     },
     "handlers": {
         "file": {
-            "level": "INFO",
+            "level": "ERROR",
             "class": "logging.handlers.RotatingFileHandler",
             "filename": LOG_DIR / "transactionManagerProcessor.log",
             "maxBytes": 1024 * 1024 * 50,  # 50 MiB
@@ -200,7 +200,7 @@ LOGGING = {
     },
     "root": {
         "handlers": ["file", "console"],
-        "level": "INFO",
+        "level": "DEBUG",
     },
     "loggers": {
         "transactionManagerProcessor": {
