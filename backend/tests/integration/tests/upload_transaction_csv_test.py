@@ -43,7 +43,7 @@ def _build_project() -> DockerCompose:
         compose_file_name=("docker-compose.yml", "docker-compose.test.yml"),
         pull=True,
         build=True,
-        keep_volumes=True,
+        keep_volumes=False,
         env_file=".env",
     )
 
