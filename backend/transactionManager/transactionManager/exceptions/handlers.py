@@ -11,7 +11,7 @@ def global_exception_handler(exc, context: dict) -> Response:
     if response := exception_handler(exc, context):
         return response
 
-    logger.error("UNHANDLED EXCEPTION", exc_info=True)
+    logger.exception("UNHANDLED EXCEPTION")
     set_rollback()
     return Response(
         {"detail": str(exc)},
