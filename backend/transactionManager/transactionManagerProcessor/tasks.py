@@ -21,7 +21,7 @@ def process_transaction_csv(transaction_csv_id: str):
     try:
         transaction_csv = TransactionCSV.objects.get(id=transaction_csv_id)
     except TransactionCSV.DoesNotExist():
-        logger.error(
+        logger.exception(
             f"Failed to process {transaction_csv_id}, file does not exist in database."
         )
         return
@@ -32,29 +32,36 @@ def process_transaction_csv(transaction_csv_id: str):
     ):
         dict_reader = csv.DictReader(csvfile)
         for transaction_data in dict_reader:
-            _process_transaction(transaction_data, status_tracker)
+            _process_transaction(transaction_data, status_tracker, transaction_csv_id)
 
 
 def _process_transaction(
     transaction_data: dict[str, any],
     status_tracker: ProcessingTracker,
+    transaction_csv_id: str,
 ):
     try:
         try:
             serializer = TransactionSerializer(data=transaction_data)
             serializer.is_valid(raise_exception=True)
             serializer.save()
-            logger.debug(f"PROCESSED DATA: {transaction_data}")
+            logger.debug(
+                f"{transaction_csv_id=} PROCESSING DATA:\n{transaction_data}\n"
+            )
         except Exception:
             status_tracker.register_fail()
             raise
     except ValidationError:
-        logger.error(f"FAILED DATA: {transaction_data}")
+        logger.exception(
+            f"{transaction_csv_id=} VALIDATION ERROR FOR:\n{transaction_data}\n"
+        )
     except IntegrityError:
-        logger.error(f"TRANSACTION ALREADY EXIST {transaction_data}")
+        logger.exception(
+            f"{transaction_csv_id=} TRANSACTION ALREADY EXIST\n{transaction_data}\n"
+        )
     except Exception:
-        logger.error(
-            f"FAILED TO CREATE TRANSACTION, UNHANDLED ERROR {transaction_data}"
+        logger.exception(
+            f"{transaction_csv_id=} UNHANDLED ERROR: FAILED TO CREATE TRANSACTION\n{transaction_data}\n"
         )
     else:
         status_tracker.register_success()

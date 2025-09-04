@@ -32,12 +32,12 @@ def _get_first(query_param):
 
 def build_qs(
     filter_key: str,
-    id: str,
+    filter_value: str,
     date_from: str | None = None,
     date_to: str | None = None,
     **kwargs,  # noqa: ARG001
 ) -> QuerySet[Transaction]:
-    id_serializer = IDSerializer(data={"id": id})
+    id_serializer = IDSerializer(data={"id": filter_value})
     id_serializer.is_valid(raise_exception=True)
     path_param = _ReportPathParam(**id_serializer.validated_data)
     transactions: QuerySet[Transaction] = Transaction.objects.filter(

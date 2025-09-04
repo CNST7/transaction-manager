@@ -19,7 +19,7 @@ class TestQSBuilder:
     ):
         transactions = build_qs(
             filter_key="customer_id",
-            id=str(customer_id_a),
+            filter_value=str(customer_id_a),
         )
 
         excepted_transactions = Transaction.objects.filter(customer_id=customer_id_a)
@@ -35,7 +35,7 @@ class TestQSBuilder:
     ):
         transactions = build_qs(
             filter_key="customer_id",
-            id=str(customer_id_a),
+            filter_value=str(customer_id_a),
             date_from="2025-08-02",
         )
 
@@ -54,7 +54,7 @@ class TestQSBuilder:
     ):
         transactions = build_qs(
             filter_key="customer_id",
-            id=str(customer_id_a),
+            filter_value=str(customer_id_a),
             date_to="2025-07-02",
         )
 
@@ -76,7 +76,7 @@ class TestQSBuilder:
     ):
         transactions = build_qs(
             filter_key="customer_id",
-            id=str(customer_id_a),
+            filter_value=str(customer_id_a),
             date_from="2025-07-02",
             date_to="2025-08-01",
         )
@@ -100,7 +100,7 @@ class TestQSBuilder:
     ):
         transactions = build_qs(
             filter_key="customer_id",
-            id=str(customer_id_a),
+            filter_value=str(customer_id_a),
             date_from=["2025-08-02", "2025-08-01", "2025-08-15"],
         )
 
@@ -120,7 +120,7 @@ class TestQSBuilder:
         with pytest.raises(ValidationError):
             _ = build_qs(
                 filter_key="customer_id",
-                id=str(customer_id_a),
+                filter_value=str(customer_id_a),
                 date_from="02-08-2025",
             )
 
@@ -132,7 +132,7 @@ class TestQSBuilder:
         with pytest.raises(FieldError):
             _ = build_qs(
                 filter_key="incorrect_id",
-                id=str(customer_id_a),
+                filter_value=str(customer_id_a),
             )
 
     def test_qs_builder_ignores_additional_query_params(
@@ -142,7 +142,7 @@ class TestQSBuilder:
     ):
         transactions = build_qs(
             filter_key="customer_id",
-            id=str(customer_id_a),
+            filter_value=str(customer_id_a),
             additional_query_param="Ignore me",
             another_additional_param="Ignore me",
         )
@@ -161,7 +161,7 @@ class TestQSBuilder:
         with pytest.raises(ValidationError) as error:
             _ = build_qs(
                 filter_key="customer_id",
-                id=str(customer_id_a),
+                filter_value=str(customer_id_a),
                 date_from="2025-08-02",
                 date_to="2025-08-01",
             )
@@ -175,7 +175,7 @@ class TestQSBuilder:
     ):
         qs = build_qs(
             filter_key="customer_id",
-            id=str(customer_id_a),
+            filter_value=str(customer_id_a),
             date_from="2025-08-02",
             date_to="2025-08-02",
         )

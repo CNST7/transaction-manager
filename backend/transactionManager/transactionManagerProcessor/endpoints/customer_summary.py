@@ -49,10 +49,12 @@ def prepare_customer_summary(
                 * PLN_currency_exchange[transaction.currency]
             )
         except KeyError:
+            error_message = f"Generating product summary failed. \
+                Unknow currency={transaction.currency} \
+                in transaction_id={transaction.transaction_id}"
+            logger.critical(error_message, exc_info=True)
             return Response(
-                {
-                    "error": f"Generating customer summary failed. {transaction.transaction_id=} unknow currency {transaction.currency=}"
-                },
+                {"error": error_message},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
