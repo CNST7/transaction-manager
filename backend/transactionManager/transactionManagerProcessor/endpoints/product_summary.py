@@ -1,6 +1,5 @@
 import logging
 from decimal import ROUND_HALF_UP, Decimal
-from functools import partial
 from typing import Annotated
 
 from django.db.models.query import QuerySet
@@ -14,15 +13,11 @@ from transactionManagerProcessor.models import Transaction
 from transactionManagerProcessor.utils.currency_exchange import (
     PLN_currency_exchange,
 )
-from transactionManagerProcessor.utils.qs_builder import build_qs
+from transactionManagerProcessor.utils.queryset_builder import (
+    TransactionQuerySetPartialDirector,
+)
 
 logger = logging.getLogger(__name__)
-
-
-build_product_summary_qs = partial(
-    build_qs,
-    "product_id",
-)
 
 
 class ProductSummaryOut(BaseModel):
@@ -69,9 +64,11 @@ def prepare_product_summary(
 
 class ProductSummaryEndpoint(APIView):
     def get(self, request: Request, product_id=None):
-        transactions = build_product_summary_qs(
-            product_id,
-            **request.query_params,
+        transactions = (
+            TransactionQuerySetPartialDirector.product_summary_queryset()
+            .with_filter_value(product_id)
+            .with_query_params(**request.query_params)
+            .build()
         )
 
         product_summary = prepare_product_summary(transactions)

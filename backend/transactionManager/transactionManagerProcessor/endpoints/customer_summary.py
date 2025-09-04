@@ -1,7 +1,6 @@
 import logging
 from datetime import datetime
 from decimal import ROUND_HALF_UP, Decimal
-from functools import partial
 from typing import Annotated
 
 from django.db.models.query import QuerySet
@@ -13,15 +12,11 @@ from rest_framework.views import APIView
 
 from transactionManagerProcessor.models import Transaction
 from transactionManagerProcessor.utils.currency_exchange import PLN_currency_exchange
-from transactionManagerProcessor.utils.qs_builder import build_qs
+from transactionManagerProcessor.utils.queryset_builder import (
+    TransactionQuerySetPartialDirector,
+)
 
 logger = logging.getLogger(__name__)
-
-
-build_customer_summary_qs = partial(
-    build_qs,
-    "customer_id",
-)
 
 
 class CustomerSummaryOut(BaseModel):
@@ -77,9 +72,11 @@ def prepare_customer_summary(
 
 class CustomerSummaryEndpoint(APIView):
     def get(self, request: Request, customer_id=None):
-        transactions = build_customer_summary_qs(
-            customer_id,
-            **request.query_params,
+        transactions = (
+            TransactionQuerySetPartialDirector.customer_summary_queryset()
+            .with_filter_value(customer_id)
+            .with_query_params(**request.query_params)
+            .build()
         )
 
         customer_summary = prepare_customer_summary(transactions)

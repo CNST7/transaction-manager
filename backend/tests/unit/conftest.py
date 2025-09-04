@@ -56,7 +56,7 @@ def customer_id_c(scope="session") -> UUID:
 
 
 @pytest.fixture
-def qs_builder_transactions(
+def queryset_builder_transactions(
     customer_id_a: UUID, product_id_a: UUID, scope="session"
 ) -> list[Transaction]:
     date_early = datetime(2025, 7, 2)
