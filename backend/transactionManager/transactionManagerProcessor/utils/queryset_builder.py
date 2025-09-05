@@ -79,6 +79,16 @@ class _TransactionQuerySetBuilder(TransactionQuerySetBuilder):
         self._query_params: _ReportQueryParamsValidated | None = None
 
     def build(self) -> QuerySet[Transaction]:
+        self._validate_build()
+        queryset = self._queryset
+        self._reset()
+        return queryset
+
+    def _reset(self):
+        self.__init__()
+
+    def _validate_build(self):
+        """Ensures required fields are set"""
         if not self._filter_key:
             raise domain_errors.QuerysetBuilderError(
                 "Please use `with_filter_key()` method before build"
@@ -88,39 +98,39 @@ class _TransactionQuerySetBuilder(TransactionQuerySetBuilder):
                 "Please use `with_filter_value()` method before build"
             )
 
-        self._queryset: QuerySet[Transaction] = Transaction.objects.filter(
-            **{f"{self._filter_key}": self._filter_value}
-        )
-
-        if self._query_params:
-            if self._query_params.date_from:
-                self._queryset = self._queryset.filter(
-                    timestamp__gte=self._query_params.date_from
-                )
-
-            if self._query_params.date_to:
-                self._queryset = self._queryset.filter(
-                    timestamp__lt=self._query_params.date_to
-                )
-
-        return self._queryset
-
     def with_filter_key(self, filter_key: str) -> Self:
+        self._set_filter_key(filter_key)
+        return self
+
+    def _set_filter_key(self, filter_key):
         valid_filter_keys = ("customer_id", "product_id")
         if filter_key not in valid_filter_keys:
             raise domain_errors.QuerysetBuilderError(
                 f"Invalid value for {filter_key=}. Should be one of {valid_filter_keys=}"
             )
         self._filter_key = filter_key
-        return self
 
     def with_filter_value(self, filter_value: str) -> Self:
+        self._set_filter_value(filter_value)
+        self._apply_filter_value()
+        return self
+
+    def _set_filter_value(self, filter_value):
         id_serializer = IDSerializer(data={"id": filter_value})
         id_serializer.is_valid(raise_exception=True)
         self._filter_value = _ReportPathParam(**id_serializer.validated_data).id
-        return self
+
+    def _apply_filter_value(self):
+        self._queryset: QuerySet[Transaction] = Transaction.objects.filter(
+            **{f"{self._filter_key}": self._filter_value}
+        )
 
     def with_query_params(self, **kwargs) -> Self:
+        self._set_query_params(kwargs)
+        self._apply_query_params()
+        return self
+
+    def _set_query_params(self, kwargs):
         raw_query_params = _ReportQueryParamsRaw(**kwargs)
         query_serializer = QueryParamsSerializer(
             data={
@@ -132,7 +142,18 @@ class _TransactionQuerySetBuilder(TransactionQuerySetBuilder):
         self._query_params = _ReportQueryParamsValidated(
             **query_serializer.validated_data
         )
-        return self
+
+    def _apply_query_params(self):
+        if self._query_params:
+            if self._query_params.date_from:
+                self._queryset = self._queryset.filter(
+                    timestamp__gte=self._query_params.date_from
+                )
+
+            if self._query_params.date_to:
+                self._queryset = self._queryset.filter(
+                    timestamp__lt=self._query_params.date_to
+                )
 
 
 class TransactionQuerySetPartialDirector:
