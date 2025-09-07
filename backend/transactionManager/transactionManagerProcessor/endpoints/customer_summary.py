@@ -11,7 +11,10 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from transactionManagerProcessor.models import Transaction
-from transactionManagerProcessor.utils.currency_exchange import PLN_currency_exchange
+from transactionManagerProcessor.utils.currency import (
+    ExchangeFactory,
+    ExchangeProcessor,
+)
 from transactionManagerProcessor.utils.queryset_builder import (
     TransactionQuerySetPartialDirector,
 )
@@ -31,6 +34,7 @@ class CustomerSummaryOut(BaseModel):
 
 def prepare_customer_summary(
     transactions: QuerySet[Transaction],
+    currency_exchange_processor: ExchangeProcessor,
 ) -> CustomerSummaryOut:
     last_transaction: datetime | None = None
     unique_products = set()
@@ -41,7 +45,7 @@ def prepare_customer_summary(
             total_amount += (
                 transaction.amount
                 * transaction.quantity
-                * PLN_currency_exchange[transaction.currency]
+                * currency_exchange_processor.get_exchange_rate(transaction.currency)
             )
         except KeyError:
             error_message = f"Generating product summary failed. \
@@ -79,6 +83,8 @@ class CustomerSummaryEndpoint(APIView):
             .build()
         )
 
-        customer_summary = prepare_customer_summary(transactions)
+        currency_processor = ExchangeFactory.prepare_strategy(request.query_params)
+
+        customer_summary = prepare_customer_summary(transactions, currency_processor)
 
         return Response(customer_summary)
