@@ -5,7 +5,6 @@ from typing import Annotated
 
 from django.db.models.query import QuerySet
 from pydantic import BaseModel, Field, NonNegativeInt, field_serializer
-from rest_framework import status
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -41,21 +40,11 @@ def prepare_customer_summary(
     total_amount = Decimal(0)
 
     for transaction in transactions:
-        try:
-            total_amount += (
-                transaction.amount
-                * transaction.quantity
-                * currency_exchange_processor.get_exchange_rate(transaction.currency)
-            )
-        except KeyError:
-            error_message = f"Generating product summary failed. \
-                Unknow currency={transaction.currency} \
-                in transaction_id={transaction.transaction_id}"
-            logger.critical(error_message, exc_info=True)
-            return Response(
-                {"error": error_message},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        total_amount += (
+            transaction.amount
+            * transaction.quantity
+            * currency_exchange_processor.get_exchange_rate(transaction.currency)
+        )
 
         if last_transaction is None:
             last_transaction = transaction.timestamp
