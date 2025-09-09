@@ -8,13 +8,16 @@ RUN apt-get update && apt-get upgrade -y && apt-get clean && apt-get install -y 
 RUN useradd -m -u 1000 backend
 WORKDIR /backend/transactionManager
 
-COPY --chown=backend:backend ./entrypoint.sh /backend/transactionManager/entrypoint.sh
+COPY --chown=backend:backend ./scripts/entrypoint.sh ./entrypoint.sh
+COPY --chown=backend:backend ./scripts/replace_windows_line_endings.py ./replace_windows_line_endings.py
+RUN python3 replace_windows_line_endings.py
+RUN rm ./replace_windows_line_endings.py
 
 COPY ./requirements.txt /backend/requirements.txt
 RUN pip install --upgrade pip
 RUN pip install -r /backend/requirements.txt --no-cache-dir
 
-COPY --chown=backend:backend ./transactionManager /backend/transactionManager/
+COPY --chown=backend:backend ./transactionManager .
 RUN mkdir -p logs static media
 RUN chown -R backend:backend logs static media
 USER backend
