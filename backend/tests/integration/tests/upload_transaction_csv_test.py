@@ -4,8 +4,9 @@ from pathlib import Path
 
 import pytest
 import requests
-from testcontainers.compose import DockerCompose
 from transactionManagerProcessor.enums import ProcessingStatus
+
+from backend.tests.integration.utils.testcontainers import DockerCompose
 
 PROJ_DIR = Path(__file__).resolve().parent.parent.parent.parent.parent
 BASE_URL = "http://localhost"
@@ -38,14 +39,7 @@ def _is_proj_directory_set_properly():
 
 
 def _build_project() -> DockerCompose:
-    return DockerCompose(
-        PROJ_DIR,
-        compose_file_name=("docker-compose.yml", "docker-compose.test.yml"),
-        pull=True,
-        build=True,
-        keep_volumes=False,
-        env_file=".env",
-    )
+    return DockerCompose(PROJ_DIR)
 
 
 def _upload_csv():

@@ -1,6 +1,7 @@
 import csv
 import logging
 from abc import ABC, abstractmethod
+from types import TracebackType
 
 from celery import shared_task
 from django.db.utils import IntegrityError
@@ -72,7 +73,12 @@ class ProcessingStatusManager(ABC):
     def __enter__(self) -> ProcessingTracker: ...
 
     @abstractmethod
-    def __exit__(self, type, value, traceback) -> bool: ...
+    def __exit__(
+        self,
+        type: type[BaseException] | None,
+        value: BaseException | None,
+        traceback: TracebackType | None,
+    ) -> bool: ...
 
 
 class CSVProcessingStatusManager(ProcessingStatusManager):
@@ -84,7 +90,12 @@ class CSVProcessingStatusManager(ProcessingStatusManager):
     def __enter__(self) -> ProcessingTracker:
         return self._csv_processing_status
 
-    def __exit__(self, type, value, traceback) -> bool:
+    def __exit__(
+        self,
+        type: type[BaseException] | None,
+        value: BaseException | None,
+        traceback: TracebackType | None,
+    ) -> bool:
         if value:
             self._csv_processing_status.set_failed()
         else:
