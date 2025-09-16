@@ -13,17 +13,21 @@ repos:
     - id: debug-statements
 - repo: local
   hooks:
-    - id: format
-      name: ruff-format
-      language: system
-      types: [python]
-      entry: ruff format
     - id: checks
       name: ruff-check
       language: system
       types: [python]
       entry: ruff check
-      args: [ --fix, --config=backend/pyproject.toml ]
+      args:
+        - --fix
+        - --config=backend/pyproject.toml
+    - id: format
+      name: ruff-format
+      language: system
+      types: [python]
+      entry: ruff format
+      args:
+        - --config=backend/pyproject.toml
 
 - repo: local
   hooks:
