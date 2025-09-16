@@ -1,8 +1,9 @@
 import logging
 from datetime import datetime
-from decimal import ROUND_HALF_UP, Decimal
-from typing import Annotated
+from decimal import Decimal
+from typing import Annotated, TypedDict
 
+from django.db.models import Count, F, Sum
 from django.db.models.query import QuerySet
 from pydantic import BaseModel, Field, NonNegativeInt, field_serializer
 from rest_framework.request import Request
@@ -31,33 +32,36 @@ class CustomerSummaryOut(BaseModel):
         return value.strftime("%Y-%m-%d %H:%M:%S")
 
 
+class CustomerSummaryPerCurrency(TypedDict):
+    currency: str
+    total: Decimal
+
+
 def prepare_customer_summary(
     transactions: QuerySet[Transaction],
     currency_exchange_processor: ExchangeProcessor,
 ) -> CustomerSummaryOut:
-    last_transaction: datetime | None = None
-    unique_products = set()
-    total_amount = Decimal(0)
+    transactions = transactions.order_by("-timestamp")
+    last_transaction = transactions.first().timestamp
 
-    for transaction in transactions:
-        total_amount += (
-            transaction.amount
-            * transaction.quantity
-            * currency_exchange_processor.get_exchange_rate(transaction.currency)
+    _total_amount_by_currency: QuerySet[CustomerSummaryPerCurrency] = (
+        transactions.annotate(total=Sum(F("amount") * F("quantity"))).values(
+            "currency", "total"
         )
+    )
+    total_amount: Decimal = sum(
+        x["total"] * currency_exchange_processor.get_exchange_rate(x["currency"])
+        for x in _total_amount_by_currency
+    )
 
-        if last_transaction is None:
-            last_transaction = transaction.timestamp
-        elif transaction.timestamp > last_transaction:
-            last_transaction = transaction.timestamp
+    unique_products = transactions.aggregate(count=Count("product_id", distinct=True))[
+        "count"
+    ]
 
-        unique_products.add(transaction.product_id)
-
-    total_amount = total_amount.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
     customer_summary = CustomerSummaryOut(
         total_amount=total_amount,
         last_transaction=last_transaction,
-        unique_products=len(unique_products),
+        unique_products=unique_products,
     )
 
     return customer_summary.model_dump(mode="json")

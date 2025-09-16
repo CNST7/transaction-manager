@@ -1,7 +1,8 @@
 import logging
-from decimal import ROUND_HALF_UP, Decimal
-from typing import Annotated
+from decimal import Decimal
+from typing import Annotated, TypedDict
 
+from django.db.models import Count, F, Sum
 from django.db.models.query import QuerySet
 from pydantic import BaseModel, Field, NonNegativeInt
 from rest_framework.request import Request
@@ -26,35 +27,48 @@ class ProductSummaryOut(BaseModel):
     unique_customers: NonNegativeInt
 
 
+class ProductSummaryPerCurrency(TypedDict):
+    currency: str
+    total: Decimal
+
+
 def prepare_product_summary(
     transactions: QuerySet[Transaction],
     currency_exchange_processor: ExchangeProcessor,
 ) -> ProductSummaryOut:
-    total_quantity = 0
-    total_amount = Decimal(0)
-    unique_customers = set()
+    total_quantity = (
+        transactions.values("product_id")
+        .annotate(total_quantity=Sum("quantity"))
+        .order_by("product_id")
+        .first()
+        .get("total_quantity")
+    )
 
-    for transaction in transactions:
-        total_quantity += transaction.quantity
-        total_amount += (
-            transaction.amount
-            * transaction.quantity
-            * currency_exchange_processor.get_exchange_rate(transaction.currency)
+    _total_amount_by_currency: QuerySet[ProductSummaryPerCurrency] = (
+        transactions.annotate(total=Sum(F("amount") * F("quantity"))).values(
+            "currency", "total"
         )
-        unique_customers.add(transaction.customer_id)
+    )
+    total_amount: Decimal = sum(
+        x["total"] * currency_exchange_processor.get_exchange_rate(x["currency"])
+        for x in _total_amount_by_currency
+    )
 
-    total_amount = total_amount.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+    unique_customers = transactions.aggregate(
+        count=Count("customer_id", distinct=True)
+    )["count"]
+
     product_summary = ProductSummaryOut(
         total_quantity=total_quantity,
         total_amount=total_amount,
-        unique_customers=len(unique_customers),
+        unique_customers=unique_customers,
     )
 
     return product_summary.model_dump(mode="json")
 
 
 class ProductSummaryEndpoint(APIView):
-    def get(self, request: Request, product_id=None):
+    def get(self, request: Request, product_id: str = None):
         transactions = (
             TransactionQuerySetPartialDirector.product_summary_queryset()
             .with_filter_value(product_id)
