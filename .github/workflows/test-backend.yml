@@ -10,9 +10,6 @@ jobs:
   test-backend:
 
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: backend
 
     steps:
     - uses: actions/checkout@v5
@@ -29,20 +26,20 @@ jobs:
 
     - name: Sync dependencies
       run: |
-        uv sync --locked
+        uv sync --directory backend --locked
 
     - name: Set pythonpath
       run: |
-        echo "PYTHONPATH=$PYTHONPATH:$(pwd)/transactionManager" >> $GITHUB_ENV
+        echo "PYTHONPATH=$PYTHONPATH:$(pwd)/backend/transactionManager" >> $GITHUB_ENV
 
     - name: Set .venv path
       run: |
-        echo "PATH=$(pwd)/.venv/bin:$PATH" >> $GITHUB_ENV
+        echo "PATH=$(pwd)/backend/.venv/bin:$PATH" >> $GITHUB_ENV
 
     - name: Create log dir
       run: |
-        mkdir -p transactionManager/logs
+        mkdir -p backend/transactionManager/logs
 
     - name: Run tests
       run: |
-        pytest
+        pytest backend
