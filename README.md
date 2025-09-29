@@ -19,7 +19,7 @@ System allows for importing, validating, processing and sharing transaction data
    - **[GET]** _/reports/customer-summary/{customer_id}_
    - **[GET]** _/reports/product-summary/{product_id}_
 
-     | Both endpoints accept the optional query parameters `date_from` and `date_to` in `YYYY-MM-DD` format.
+     | Summary endpoints accept optional query params `date_from` and `date_to` in `YYYY-MM-DD` format.
 
 ## ⚙️ Technology stack
 
@@ -30,10 +30,17 @@ System allows for importing, validating, processing and sharing transaction data
 - 🌱 [Celery](https://docs.celeryq.dev/en/stable/index.html)
 - 🐰 [RabbitMQ](https://www.rabbitmq.com/)
 - 🔑 [Redis](https://redis.io/)
-- 🐳 [Docker compose](https://docs.docker.com/compose/)
+- 🐳 [Docker](https://www.docker.com/)
+- 🛳️ [Docker compose](https://docs.docker.com/compose/)
 - 🧪 [Pytest](https://docs.pytest.org/en/stable/)
 - 🌐 [NGINX](https://nginx.org/en/)
 - ✨ [Pre-commit](https://pre-commit.com)
+- ⚡️ [Ruff](https://docs.astral.sh/ruff/)
+- 📦 [UV](https://docs.astral.sh/uv/)
+
+**`UV` and `Docker` are zero-level dependencies which means you have to have them installed on your machine.**
+
+**`UV` can be skipped if you only want to run the project with `docker compose`**
 
 ## 🚀 Start project
 

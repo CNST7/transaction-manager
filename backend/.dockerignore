@@ -2,3 +2,6 @@ transactionManager/db.sqlite3
 transactionManager/logs
 transactionManager/media
 transactionManager/static
+tests
+.*
+Dockerfile

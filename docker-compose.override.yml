@@ -13,8 +13,6 @@ services:
           target: /backend/transactionManager
         - action: rebuild
           path: ./backend/pyproject.toml
-        - action: rebuild
-          path: ./backend/requirements.txt
     environment:
       DEBUG: 1
 
@@ -27,8 +25,6 @@ services:
           target: /backend/transactionManager
         - action: rebuild
           path: ./backend/pyproject.toml
-        - action: rebuild
-          path: ./backend/requirements.txt
         - action: sync+restart
           path: ./backend/transactionManager/transactionManagerProcessor/tasks.py
           target: /backend/transactionManager/transactionManagerProcessor/tasks.py

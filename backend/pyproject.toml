@@ -1,3 +1,49 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "transaction-manager"
+version = "0.1.0"
+description = "📊 Transaction processing and aggregation system"
+readme = "README.md"
+classifiers = ["Private :: Do Not Upload"]
+requires-python = ">=3.12,<4.0"
+dependencies = [
+    # project dependencies
+    "Django<6.0.0,>=5.2.3",
+    "djangorestframework<4.0.0,>=3.16.0",
+    "django-filter<26.0,>=25.1",
+    "pydantic<3.0.0,>=2.11.7",
+    # celery
+    "celery<6.0.0,>=5.5.3",
+    "redis<7.0.0,>=6.2.0",
+    # PostgreSQL database adapter
+    "psycopg2-binary<3.0.0,>=2.9.10",
+    # web server
+    "uvicorn<1.0.0,>=0.35.0",
+]
+
+[dependency-groups]
+dev = [
+    # tools
+    "ruff<1.0.0,>=0.12.9",
+    "pre_commit<5.0.0,>=4.3.0",
+
+    # testing
+    "pytest<9.0.0,>=8.4.1",
+    "pytest-django<5.0.0,>=4.11.1",
+    "pytest-mock<4.0.0,>=3.15.0",
+    "pytest-xdist[psutil]<4.0.0,>=3.8.0",
+    "model-bakery<2.0.0,>=1.20.5",
+
+    # testing.integration
+    "requests<3.0.0,>=2.32.4",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["backend/transactionManager"]
+
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "transactionManager.settings_test"
 

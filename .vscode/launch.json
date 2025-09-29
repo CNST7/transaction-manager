@@ -12,7 +12,7 @@
                 "runserver", "--settings=transactionManager.settings_dev"
             ],
             "django": true,
-            "autoStartBrowser": false,
+            "autoStartBrowser": true,
             "program": "${workspaceFolder}/backend/transactionManager/manage.py"
         }
     ]

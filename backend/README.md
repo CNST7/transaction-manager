@@ -2,47 +2,42 @@
 
 ## Local development workflow
 
-1. **Create and activate a virtual environment**
+1. **Install dependencies**
 
    ```sh
-   python -m venv backend/.venv
-   source backend/.venv/bin/activate
+   uv sync --directory backend --locked
    ```
 
-2. **Install dependencies**
-
-   ```sh
-   pip install -r backend/requirements.txt -r backend/requirements.dev.txt -r backend/requirements.test.txt
-   ```
-
-3. **Set PYTHONPATH**
+2. **Set PYTHONPATH**
 
    ```sh
    export PYTHONPATH=$PYTHONPATH:$(pwd)/backend/transactionManager
    ```
 
-4. **Create logs directory**
+3. **PC restart might be required at this point**
+
+4. **Apply migrations**
+
+   > assuming venv created by `uv sync` is active
 
    ```sh
-   mkdir -p backend/transactionManager/logs
+   ./backend/transactionManager/manage.py migrate --settings=transactionManager.settings_dev
    ```
 
-5. **Apply migrations**
+5. **Collect static files**
+
+   > assuming venv created by `uv sync` is active
 
    ```sh
-   python backend/transactionManager/manage.py migrate --settings=transactionManager.settings_dev
+   ./backend/transactionManager/manage.py collectstatic --settings=transactionManager.settings_dev --no-input --clear
    ```
 
-6. **Collect static files**
+6. **Run development server**
+
+   > assuming venv created by `uv sync` is active
 
    ```sh
-   python backend/transactionManager/manage.py collectstatic --settings=transactionManager.settings_dev --clear
-   ```
-
-7. **Run development server**
-
-   ```sh
-   python backend/transactionManager/manage.py runserver --settings=transactionManager.settings_dev
+   ./backend/transactionManager/manage.py runserver --settings=transactionManager.settings_dev
    ```
 
    > or F5 in vscode
@@ -51,13 +46,7 @@
 
 ## Docker watch
 
-If whole stack is needed you can use docker watch for development
-
-```sh
-docker compose up -w
-```
-
-or
+If whole stack is needed use docker watch for development
 
 ```sh
 docker compose watch
@@ -65,7 +54,9 @@ docker compose watch
 
 ## Testing
 
-Run tests:
+> assuming venv created by `uv sync` is active
+
+Run all tests:
 
 ```sh
 pytest backend
@@ -73,8 +64,16 @@ pytest backend
 
 To skip slow, integration tests:
 
+> Runs only unit tests
+
 ```sh
 pytest backend -m "not integration"
+```
+
+To run only integration tests:
+
+```sh
+pytest backend -m "integration"
 ```
 
 ## Contributing
@@ -94,11 +93,10 @@ which is **_highly discouraged!_**
 
 ## VS Code
 
-Configuration is already there.
-Just press F5 in vscode with python interpreter set at `backend/.venv/bin/python`
-Also test suite is available through the VS Code Python tests tab.
+Configuration is already here. Press `F5` in vscode to run development server.
+Also test suite is available through the VS Code testing tab.
 
-Comment following line in [.vscode/settings.json](../.vscode/settings.json#4) to run integration tests.
+**To make integration tests visible in testing tab** comment out following line in [.vscode/settings.json](../.vscode/settings.json#4).
 
 ```json
 // "-m", "not integration",

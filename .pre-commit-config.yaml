@@ -11,6 +11,7 @@ repos:
     - id: check-toml
     - id: check-yaml
     - id: debug-statements
+
 - repo: local
   hooks:
     - id: checks
@@ -28,13 +29,10 @@ repos:
       entry: ruff format
       args:
         - --config=backend/pyproject.toml
-
-- repo: local
-  hooks:
-  - id: pytest
-    name: pytest
-    language: python
-    types: [python]
-    entry: pytest
-    args: [backend, -m, "not integration"]
-    pass_filenames: false
+    - id: pytest
+      name: pytest
+      language: python
+      types: [python]
+      entry: pytest
+      args: [backend, -m, "not integration"]
+      pass_filenames: false

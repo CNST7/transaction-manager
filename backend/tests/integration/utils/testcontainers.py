@@ -19,7 +19,13 @@ class DockerCompose:
         value: BaseException | None,
         traceback: TracebackType | None,
     ) -> bool:
-        self._down()
+        """
+        Does not remove cantainers on error.
+        Use them for investigation with:
+        `docker compose logs <service_name>`
+        """
+        if value is None:
+            self._down()
         return True
 
     def _build(self):

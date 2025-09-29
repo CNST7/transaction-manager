@@ -19,13 +19,13 @@ def api_root(request, format=None):
             ),
             # f"{transactions_resource_name}/processing-status/<str:transaction_csv_id>": request.build_absolute_uri(
             #     f"{transactions_resource_name}"
-            #     + "/processing-status/{transaction_csv_id}"
+            #     + "/processing-status/transaction_csv_id"
             # ),
             f"{reports_resource_name}/customer-summary/<str:customer_id>": request.build_absolute_uri(
-                f"{reports_resource_name}" + "/customer-summary/{customer_id}"
+                f"{reports_resource_name}" + "/customer-summary/customer_id"
             ),
             f"{reports_resource_name}/product-summary/<str:product_id>": request.build_absolute_uri(
-                f"{reports_resource_name}" + "/product-summary/{product_id}"
+                f"{reports_resource_name}" + "/product-summary/product_id"
             ),
             # f"{utils_resource_name}/health-check": reverse(
             #     "healthCheck", request=request, format=format
