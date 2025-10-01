@@ -2,9 +2,9 @@ name: Test Backend
 
 on:
   push:
-    branches: [ "chore/uv" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "chore/uv" ]
+    branches: [ "main" ]
 
 jobs:
   test-backend:
